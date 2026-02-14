@@ -35,12 +35,11 @@
 | 02 | 01 | ~2min | 2 | 3 | 2026-02-14 |
 | 02 | 02 | 24min | 3 | 1 | 2026-02-14 |
 
-### Quick Tasks Completed
-
 | Task | Description | Files | Date |
 |------|-------------|-------|------|
 | Dockerfile Setup | Created a robust, self-contained Dockerfile using static build of whisper-cli. Includes automatic file cleanup and diagnostics. | `Dockerfile`, `.dockerignore` | 2026-02-14 |
 | Repository Setup | Configured remote origin to https://github.com/uiratan/whisper-mvc | - | 2026-02-14 |
+| Documentation | Created a professional README.md with badges, architecture details, and setup guides. | `README.md` | 2026-02-14 |
 
 | Metric | Value | Target |
 |--------|-------|--------|
