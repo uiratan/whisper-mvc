@@ -1,6 +1,6 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-14 | **Current Phase:** 01-frontend-audio-upload (Complete ✓) | **Overall Progress:** 50%
+**Last Updated:** 2026-02-14 | **Current Phase:** 02-transcription-results-display (In Progress) | **Overall Progress:** 75%
 
 ---
 
@@ -10,7 +10,7 @@
 
 **What We're Building:** A simple Next.js web app that lets users upload audio files, transcribes them locally using whisper.cpp, and displays results with timestamps. Proof of concept to validate frontend-whisper.cpp integration.
 
-**Current Focus:** Phase 1 complete and verified ✓ — Ready for Phase 2 (Transcription Backend)
+**Current Focus:** Phase 2 Plan 1 complete — whisper.cpp transcription backend with audio conversion
 
 ---
 
@@ -18,11 +18,11 @@
 
 **Roadmap Status:** In execution
 
-**Phase:** 01-frontend-audio-upload (Phase 1 of 2) — ✓ Complete
+**Phase:** 02-transcription-results-display (Phase 2 of 2) — In Progress
 
-**Current Plan:** All plans complete (2/2) — Verified and approved
+**Current Plan:** Plan 1 of 2 complete — Plan 02-01 (Whisper.cpp backend integration)
 
-**Progress:** 50% (Phase 1 complete ✓, Phase 2 pending)
+**Progress:** [████████░░] 75%
 
 ---
 
@@ -32,16 +32,15 @@
 |-------|------|----------|-------|-------|-----------|
 | 01 | 01 | ~10min | 2 | 8+ | 2026-02-14 |
 | 01 | 02 | ~2min | 3 | 4 | 2026-02-14 |
+| 02 | 01 | ~2min | 2 | 3 | 2026-02-14 |
 
 | Metric | Value | Target |
 |--------|-------|--------|
 | Requirements Mapped | 7/7 | 7/7 ✓ |
 | Phases Created | 2 | 2-3 |
 | Success Criteria Defined | 9 | 2+ per phase |
-| Plans Completed | 2 | - |
+| Plans Completed | 3 | - |
 | Requirements Fulfilled | 3/7 ✓ (UPLD-01, UPLD-02, DISP-02) | 7/7 |
-
----
 
 ## Accumulated Context
 
@@ -65,6 +64,10 @@
 
 6. **File validation strategy (01-02):** Dual validation (client-side for UX, server-side for security) with 25MB max file size for audio uploads
 
+7. **Audio conversion strategy (02-01):** Always convert to WAV 16kHz mono for whisper.cpp compatibility using fluent-ffmpeg
+
+8. **Environment variable pattern (02-01):** WHISPER_CPP_PATH and WHISPER_MODEL_PATH with sensible defaults for flexible deployment
+
 ### Todos
 
 - [x] User reviews and approves ROADMAP.md
@@ -72,7 +75,9 @@
 - [x] Set up Next.js project structure
 - [x] Create upload UI component
 - [x] Human verification of upload flow at checkpoint ✓
-- [ ] Begin Phase 2 (transcription backend)
+- [x] Begin Phase 2 (transcription backend)
+- [x] Plan 02-01: whisper.cpp transcription backend ✓
+- [ ] Plan 02-02: Display transcription results in frontend
 
 ### Blockers
 
@@ -88,17 +93,18 @@ None — ready to proceed after user approval.
 
 ## Session Continuity
 
-**Last Action:** Phase 1 verified and approved by user ✓
+**Last Action:** Completed Plan 02-01 (whisper.cpp transcription backend)
 
-**Stopped At:** Phase 1 complete, ready to begin Phase 2
+**Stopped At:** Completed 02-01-PLAN.md
 
 **What Changed Since Last Session:**
-- Plan 01-01: Next.js project scaffold complete ✓
-- Plan 01-02: Audio upload flow complete (AudioUploader component + API endpoint) ✓
-- Requirements UPLD-01, UPLD-02, DISP-02 fulfilled and verified ✓
-- Fixed package.json CommonJS/ESM conflict ✓
-- User approved Phase 1 checkpoint
+- Plan 02-01: whisper.cpp integration complete ✓
+- Added fluent-ffmpeg for audio conversion to WAV 16kHz mono
+- Implemented transcribeAudio function with child_process.spawn
+- JSON output parsing with timestamped segments
+- Comprehensive error handling for conversion and transcription
+- Environment variable support (WHISPER_CPP_PATH, WHISPER_MODEL_PATH)
 
-**Ready For:** Phase 2 execution (whisper.cpp transcription backend)
+**Ready For:** Plan 02-02 — Frontend display of transcription results
 
 ---
