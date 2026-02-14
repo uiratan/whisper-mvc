@@ -137,6 +137,12 @@ export default function AudioUploader() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
+  const formatTimestamp = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-8">
       {/* Header */}
@@ -278,6 +284,41 @@ export default function AudioUploader() {
           'Upload File'
         )}
       </button>
+
+      {/* Transcription Results */}
+      {transcription && (
+        <div className="mt-8 border-t border-gray-200 pt-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Transcription</h3>
+
+          {/* Full Text */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Full Text</h4>
+            <p className="text-gray-900 leading-relaxed">{transcription.text}</p>
+          </div>
+
+          {/* Timestamped Segments */}
+          {transcription.segments.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Timestamped Segments</h4>
+              <div className="space-y-2">
+                {transcription.segments.map((segment, index) => (
+                  <div
+                    key={index}
+                    className="flex gap-4 p-3 bg-white border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="flex-shrink-0 text-sm font-mono text-indigo-600 font-medium">
+                      [{formatTimestamp(segment.start)} - {formatTimestamp(segment.end)}]
+                    </div>
+                    <div className="flex-1 text-gray-800">
+                      {segment.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
