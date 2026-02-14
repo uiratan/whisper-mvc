@@ -39,6 +39,12 @@ Set up Next.js project scaffolding, create file upload UI component, wire upload
 
 **Goal:** Users see transcribed audio with timestamps after processing
 
+**Plans:** 2 plans in 2 waves
+
+Plans:
+- [ ] 02-01-PLAN.md — Backend whisper.cpp integration with audio conversion
+- [ ] 02-02-PLAN.md — Frontend transcription results display
+
 **Requirements:**
 - TRNS-01: Backend receives uploaded audio and invokes whisper.cpp binary
 - TRNS-02: Backend converts audio to WAV 16kHz mono if needed
