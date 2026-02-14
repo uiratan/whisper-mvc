@@ -7,8 +7,8 @@
 
 ### Upload
 
-- [ ] **UPLD-01**: User can select and upload an audio file (.wav, .mp3, .ogg) via the web page
-- [ ] **UPLD-02**: Page shows upload progress/status indicator
+- [x] **UPLD-01**: User can select and upload an audio file (.wav, .mp3, .ogg) via the web page
+- [x] **UPLD-02**: Page shows upload progress/status indicator
 
 ### Transcription
 
@@ -19,7 +19,7 @@
 ### Display
 
 - [ ] **DISP-01**: Page displays transcribed text with timestamps after processing
-- [ ] **DISP-02**: Page shows processing/loading state while whisper.cpp runs
+- [x] **DISP-02**: Page shows processing/loading state while whisper.cpp runs
 
 ## v2 Requirements
 
@@ -48,13 +48,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UPLD-01 | Phase 1 | Pending |
-| UPLD-02 | Phase 1 | Pending |
+| UPLD-01 | Phase 1 | ✓ Complete |
+| UPLD-02 | Phase 1 | ✓ Complete |
 | TRNS-01 | Phase 2 | Pending |
 | TRNS-02 | Phase 2 | Pending |
 | TRNS-03 | Phase 2 | Pending |
 | DISP-01 | Phase 2 | Pending |
-| DISP-02 | Phase 1 | Pending |
+| DISP-02 | Phase 1 | ✓ Complete |
 
 **Coverage:**
 - v1 requirements: 7 total
