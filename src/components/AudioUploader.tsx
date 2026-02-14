@@ -2,12 +2,24 @@
 
 import { useState } from 'react'
 
+interface TranscriptionSegment {
+  start: number
+  end: number
+  text: string
+}
+
+interface TranscriptionResult {
+  text: string
+  segments: TranscriptionSegment[]
+}
+
 interface UploadResponse {
   success: boolean
   fileName?: string
   filePath?: string
   fileSize?: number
   message: string
+  transcription?: TranscriptionResult
 }
 
 export default function AudioUploader() {
@@ -16,6 +28,7 @@ export default function AudioUploader() {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [statusMessage, setStatusMessage] = useState<string>('')
   const [statusType, setStatusType] = useState<'idle' | 'success' | 'error'>('idle')
+  const [transcription, setTranscription] = useState<TranscriptionResult | null>(null)
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
 
@@ -74,6 +87,11 @@ export default function AudioUploader() {
           setStatusMessage(response.message || 'Upload successful!')
           setStatusType('success')
           setUploadProgress(100)
+
+          // Store transcription if present
+          if (response.transcription) {
+            setTranscription(response.transcription)
+          }
         } else {
           const errorResponse: UploadResponse = JSON.parse(xhr.responseText)
           setStatusMessage(errorResponse.message || 'Upload failed')
@@ -107,6 +125,7 @@ export default function AudioUploader() {
     setUploadProgress(0)
     setStatusMessage('')
     setStatusType('idle')
+    setTranscription(null)
     // Reset file input
     const fileInput = document.getElementById('audio-file-input') as HTMLInputElement
     if (fileInput) fileInput.value = ''
