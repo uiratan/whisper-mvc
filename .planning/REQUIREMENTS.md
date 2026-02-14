@@ -48,19 +48,20 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UPLD-01 | — | Pending |
-| UPLD-02 | — | Pending |
-| TRNS-01 | — | Pending |
-| TRNS-02 | — | Pending |
-| TRNS-03 | — | Pending |
-| DISP-01 | — | Pending |
-| DISP-02 | — | Pending |
+| UPLD-01 | Phase 1 | Pending |
+| UPLD-02 | Phase 1 | Pending |
+| TRNS-01 | Phase 2 | Pending |
+| TRNS-02 | Phase 2 | Pending |
+| TRNS-03 | Phase 2 | Pending |
+| DISP-01 | Phase 2 | Pending |
+| DISP-02 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7 ⚠️
+- Mapped to phases: 7
+- Unmapped: 0 ✓
 
 ---
+
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after initial definition*
+*Last updated: 2026-02-14 after roadmap creation*
