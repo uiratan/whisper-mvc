@@ -1,4 +1,4 @@
-import AudioUploader from '@/components/AudioUploader'
+import AudioUploader from '../components/AudioUploader'
 
 export default function Home() {
   return (

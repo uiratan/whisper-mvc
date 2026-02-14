@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir, readFile } from 'fs/promises'
+import { writeFile, mkdir, readFile, rename, unlink } from 'fs/promises'
 import path from 'path'
 import { existsSync } from 'fs'
 import ffmpeg from 'fluent-ffmpeg'
@@ -38,45 +38,64 @@ async function convertToWav(inputPath: string): Promise<string> {
 }
 
 async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
+  const whisperBinary = process.env.WHISPER_CPP_PATH || 'whisper.cpp'
+  const modelPath = process.env.WHISPER_MODEL_PATH || 'models/ggml-base.bin'
+
+  // Diagnostic: Check files and sizes
+  try {
+    const { execSync } = require('child_process');
+    console.log(`[Diagnostic] Binary info: ${execSync(`ls -lh ${whisperBinary}`).toString()}`);
+    console.log(`[Diagnostic] Model info: ${execSync(`ls -lh ${modelPath}`).toString()}`);
+    console.log(`[Diagnostic] WAV info: ${execSync(`ls -lh ${wavPath}`).toString()}`);
+    // Try to run help instead of version
+    console.log(`[Diagnostic] Binary help (first line): ${execSync(`${whisperBinary} -h 2>&1 | head -n 1`).toString()}`);
+  } catch (diagError: any) {
+    console.warn(`[Diagnostic Failed] ${diagError.message}`);
+  }
+
+  // Simplify filename for whisper.cpp (it can be picky with paths)
+  const tempWavName = `temp-${Date.now()}.wav`
+  const tempWavPath = path.join(UPLOAD_DIR, tempWavName)
+  await rename(wavPath, tempWavPath)
+
   return new Promise((resolve, reject) => {
-    // Assume whisper.cpp binary is in PATH or at ./whisper.cpp
-    // Try common locations: ./whisper.cpp, whisper.cpp (in PATH), ./main (whisper.cpp default binary name)
-    const whisperBinary = process.env.WHISPER_CPP_PATH || 'whisper.cpp'
-
-    // Use base model for balance of speed and accuracy (from PROJECT.md constraints)
-    const modelPath = process.env.WHISPER_MODEL_PATH || 'models/ggml-base.bin'
-
     const args = [
       '-m', modelPath,
-      '-f', wavPath,
+      '-f', tempWavPath,
       '--output-json',
-      '--output-file', wavPath.replace('.wav', '')  // Output base path (whisper adds .json)
+      '--output-file', tempWavPath.replace('.wav', '')
     ]
 
+    console.log(`[Whisper] Executing: ${whisperBinary} ${args.join(' ')}`)
     const whisper = spawn(whisperBinary, args)
 
     let stderr = ''
+    let stdout = ''
+
+    whisper.stdout.on('data', (data) => {
+      stdout += data.toString()
+    })
 
     whisper.stderr.on('data', (data) => {
-      stderr += data.toString()
-      console.log(`[Whisper] ${data.toString().trim()}`)
+      const msg = data.toString()
+      stderr += msg
+      console.log(`[Whisper STDERR] ${msg.trim()}`)
     })
 
     whisper.on('close', async (code) => {
-      if (code !== 0) {
-        reject(new Error(`Whisper.cpp failed with code ${code}: ${stderr}`))
-        return
-      }
-
-      // Read JSON output file
-      const jsonPath = wavPath.replace('.wav', '.json')
+      const jsonPath = tempWavPath.replace('.wav', '.json')
+      
       try {
+        if (code !== 0) {
+          reject(new Error(`Whisper.cpp failed with code ${code}: ${stderr}`))
+          return
+        }
+
         const jsonData = await readFile(jsonPath, 'utf-8')
         const result = JSON.parse(jsonData)
 
-        // whisper.cpp JSON format has "transcription" array with segments
         const segments: TranscriptionSegment[] = result.transcription?.map((seg: any) => ({
-          start: seg.offsets.from / 100, // Convert centiseconds to seconds
+          start: seg.offsets.from / 100,
           end: seg.offsets.to / 100,
           text: seg.text.trim()
         })) || []
@@ -89,6 +108,15 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
         })
       } catch (err) {
         reject(new Error(`Failed to parse whisper.cpp output: ${err}`))
+      } finally {
+        // CLEANUP: Delete temporary WAV and JSON files
+        try {
+          if (existsSync(tempWavPath)) await unlink(tempWavPath)
+          if (existsSync(jsonPath)) await unlink(jsonPath)
+          console.log('[Cleanup] Temporary transcription files deleted')
+        } catch (cleanupError) {
+          console.warn('[Cleanup] Error deleting transcription files:', cleanupError)
+        }
       }
     })
 
@@ -99,6 +127,8 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
 }
 
 export async function POST(request: NextRequest) {
+  let filePath: string | null = null;
+  
   try {
     console.log('[Upload API] Received upload request')
 
@@ -150,7 +180,7 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now()
     const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
     const uniqueFilename = `${timestamp}-${sanitizedFilename}`
-    const filePath = path.join(UPLOAD_DIR, uniqueFilename)
+    filePath = path.join(UPLOAD_DIR, uniqueFilename)
 
     // Convert file to buffer and save
     const bytes = await file.arrayBuffer()
@@ -176,10 +206,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          fileName: uniqueFilename,
-          filePath: filePath,
-          fileSize: file.size,
-          message: 'File uploaded and transcribed successfully',
+          message: 'File processed and transcribed successfully',
           transcription: transcription
         },
         { status: 200 }
@@ -217,5 +244,15 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     )
+  } finally {
+    // CLEANUP: Delete original uploaded file if it exists
+    if (filePath && existsSync(filePath)) {
+      try {
+        await unlink(filePath)
+        console.log('[Cleanup] Original upload file deleted')
+      } catch (cleanupError) {
+        console.warn('[Cleanup] Error deleting original file:', cleanupError)
+      }
+    }
   }
 }

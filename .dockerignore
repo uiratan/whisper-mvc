@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.planning
+uploads
+*.wav
+*.mp3
+*.m4a
+*.json
+!package.json
+!package-lock.json
