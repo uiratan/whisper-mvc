@@ -10,6 +10,12 @@
 
 **Goal:** Users can select and upload audio files with visual feedback
 
+**Plans:** 2 plans in 2 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js project setup with TypeScript and Tailwind
+- [ ] 01-02-PLAN.md — Audio upload UI and API endpoint
+
 **Requirements:**
 - UPLD-01: User can select and upload an audio file (.wav, .mp3, .ogg)
 - UPLD-02: Page shows upload progress/status indicator
