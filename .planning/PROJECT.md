@@ -32,9 +32,11 @@ Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando 
 ## Context
 
 - whisper.cpp já está compilado na máquina do usuário
+  - **Binário**: `/home/uira/git/ai/whisper.cpp/build/bin/whisper-cli` (ou `main`)
+  - **Modelo**: `/home/uira/git/ai/whisper.cpp/models/ggml-base.en.bin`
 - Projeto é um teste de funcionamento, não um produto
 - Next.js escolhido como framework (frontend + API routes)
-- Modelo tiny/base para velocidade no teste
+- Modelo base.en para velocidade no teste
 
 ## Constraints
 
