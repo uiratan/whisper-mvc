@@ -2,12 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { existsSync } from 'fs'
+import ffmpeg from 'fluent-ffmpeg'
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
 
 // Allowed MIME types
 const ALLOWED_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg']
+
+async function convertToWav(inputPath: string): Promise<string> {
+  const outputPath = inputPath.replace(/\.[^.]+$/, '.wav')
+
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .audioFrequency(16000)
+      .audioChannels(1)
+      .audioCodec('pcm_s16le')
+      .toFormat('wav')
+      .on('end', () => resolve(outputPath))
+      .on('error', (err) => reject(err))
+      .save(outputPath)
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
