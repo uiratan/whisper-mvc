@@ -13,8 +13,8 @@
 **Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Next.js project setup with TypeScript and Tailwind
-- [ ] 01-02-PLAN.md — Audio upload UI and API endpoint
+- [x] 01-01-PLAN.md — Next.js project setup with TypeScript and Tailwind
+- [x] 01-02-PLAN.md — Audio upload UI and API endpoint
 
 **Requirements:**
 - UPLD-01: User can select and upload an audio file (.wav, .mp3, .ogg)
@@ -42,8 +42,8 @@ Set up Next.js project scaffolding, create file upload UI component, wire upload
 **Plans:** 2 plans in 2 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Backend whisper.cpp integration with audio conversion
-- [ ] 02-02-PLAN.md — Frontend transcription results display
+- [x] 02-01-PLAN.md — Backend whisper.cpp integration with audio conversion
+- [x] 02-02-PLAN.md — Frontend transcription results display
 
 **Requirements:**
 - TRNS-01: Backend receives uploaded audio and invokes whisper.cpp binary
@@ -70,11 +70,14 @@ Implement whisper.cpp integration via child process spawning, add audio format c
 
 | Phase | Status | Requirements | Criteria |
 |-------|--------|--------------|----------|
-| 1 | Pending | 3 | 4 |
-| 2 | Pending | 4 | 5 |
+| 1 | Complete ✓ | 3 | 4 |
+| 2 | Complete ✓ | 4 | 5 |
 
 **Coverage:** 7/7 requirements mapped ✓
 
 ---
 
 *Roadmap created: 2026-02-14*
+*Phase 1 completed: 2026-02-14*
+*Phase 2 completed: 2026-02-14*
+*Milestone completed: 2026-02-14*
