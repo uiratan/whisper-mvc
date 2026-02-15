@@ -420,7 +420,7 @@ export default function AudioUploader() {
                 ) : (
                   <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-full bg-indigo-50">
                     <svg className="w-8 h-8 sm:w-12 sm:h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-20a3 3 0 013 3v10a3 3 0 01-3 33 3 0 01-3-3V4a3 3 0 013-3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 013-3h1a3 3 0 013 3v3a3 3 0 01-3 3h-1a3 3 0 01-3-3v-3z" />
                     </svg>
                   </div>
                 )}
