@@ -56,10 +56,11 @@ Plans:
 
 **Goal:** Enable users to export results and improve overall look and feel.
 
-**Phases:** 1 plan
+**Plans:** 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Implementation of Export (SRT/TXT), Copy-to-clipboard, and UI refinements.
+- [ ] 05-01-PLAN.md — Export utilities (SRT/TXT generation) and action buttons (Copy, Download).
+- [ ] 05-02-PLAN.md — Audio player component with bidirectional sync and segment interaction.
 
 **Requirements:**
 - EOUT-01: Copy to clipboard.
