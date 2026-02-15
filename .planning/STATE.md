@@ -1,6 +1,6 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-14 | **Current Phase:** 02-transcription-results-display (Complete) | **Overall Progress:** 100%
+**Last Updated:** 2026-02-14 | **Current Phase:** Milestone v1.0 (Archived) | **Overall Progress:** 100% (v1.0 Shipped)
 
 ---
 
@@ -8,9 +8,9 @@
 
 **Core Value:** Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando na tela.
 
-**What We're Building:** A simple Next.js web app that lets users upload audio files, transcribes them locally using whisper.cpp, and displays results with timestamps. Proof of concept to validate frontend-whisper.cpp integration.
+**What We're Building:** Shipped v1.0 Proof of Concept. Next milestone will focus on enhanced input and output features.
 
-**Current Focus:** Phase 2 complete — All requirements fulfilled, core value achieved!
+**Current Focus:** Milestone v1.0 Complete! Preparing for next goals.
 
 ---
 
