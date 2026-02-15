@@ -41,10 +41,10 @@
   1. Creating a git tag triggers automatic deployment to Fly.io
   2. Pipeline verifies app health after deployment completes
   3. GitHub shows deploy success/failure status for each tag
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 06-01-PLAN.md — GitHub Actions workflow with tag trigger, Fly.io deployment, health checks
 
 ### Phase 7: Documentation
 **Goal**: README accurately reflects current system capabilities
@@ -68,9 +68,9 @@ Plans:
 |-----------|--------|-------|--------|---------|
 | v1.0 | 1-2 | 4 | ✅ Complete | 2026-02-14 |
 | v2.0 | 3-5 | 5 | ✅ Complete | 2026-02-15 |
-| v2.1 | 6-7 | 0 | 🚧 In progress | - |
-| **Total** | **7** | **9** | **64%** | - |
+| v2.1 | 6-7 | 1 | 🚧 In progress | - |
+| **Total** | **7** | **10** | **67%** | - |
 
 ---
 
-*Roadmap updated: 2026-02-15 after v2.1 roadmap creation*
+*Roadmap updated: 2026-02-15 after Phase 6 planning*
