@@ -42,6 +42,7 @@
 | Recording | Browser recording, live visualization, and waveform preview. | `useVoiceRecorder.ts`, `LiveVisualizer.tsx`, `RecordingPreview.tsx` | 2026-02-14 |
 | Export/Copy | Client-side SRT/TXT export and clipboard integration with visual feedback. | `exportUtils.ts`, `AudioUploader.tsx` | 2026-02-15 |
 | Interactive Playback | HTML5 audio player with click-to-seek and real-time segment highlighting. | `TranscriptionPlayer.tsx`, `AudioUploader.tsx` | 2026-02-15 |
+| v2.0 Shipped | Enhanced Input & Output successfully delivered and archived (v2.0 tag created). | `.planning/milestones/v2.0-*` | 2026-02-15 |
 
 | Metric | Value | Target |
 |--------|-------|--------|
