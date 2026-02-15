@@ -139,7 +139,7 @@ export default function AudioUploader() {
     if (!selectedFile) return
 
     setIsUploading(true)
-    setUploadProgress(0)
+    setUploadProgress(1)
     setCurrentPhase('upload')
     setStatusMessage('Connecting...')
     setStatusType('idle')
@@ -616,7 +616,7 @@ export default function AudioUploader() {
       )}
 
       {/* Progress Bar */}
-      {uploadProgress > 0 && (
+      {isUploading && (
         <div className="mb-4 sm:mb-6">
           <div className="flex justify-between mb-1 sm:mb-2">
             <span className="text-[10px] sm:text-sm font-medium text-gray-700">
