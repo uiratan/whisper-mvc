@@ -30,7 +30,6 @@ Plans:
 3. Invalid files are rejected with a clear error message.
 
 ---
-
 ## Phase 4: Browser Recording & Visualization
 
 **Goal:** Users can record audio directly in the browser with real-time feedback.
@@ -38,8 +37,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Native `MediaRecorder` hook and recording logic.
-- [ ] 04-02-PLAN.md — Canvas visualizer and recording timer UI.
+- [x] 04-01-PLAN.md — Native `MediaRecorder` hook and recording logic.
+- [x] 04-02-PLAN.md — Canvas visualizer and recording timer UI.
 
 **Requirements:**
 - EINP-02: Native browser recording.
@@ -57,7 +56,7 @@ Plans:
 
 **Goal:** Enable users to export results and improve overall look and feel.
 
-**Plans:** 1 plan
+**Phases:** 1 plan
 
 Plans:
 - [ ] 05-01-PLAN.md — Implementation of Export (SRT/TXT), Copy-to-clipboard, and UI refinements.
@@ -81,7 +80,7 @@ Plans:
 | Phase | Status | Requirements | Criteria |
 |-------|--------|--------------|----------|
 | 3 | Completed | 1 | 3 |
-| 4 | Pending | 2 | 4 |
+| 4 | Completed | 2 | 4 |
 | 5 | Pending | 4 | 4 |
 
 **Coverage:** 7/7 v2 requirements mapped ✓

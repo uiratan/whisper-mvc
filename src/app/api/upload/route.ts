@@ -21,6 +21,7 @@ const ALLOWED_TYPES = [
   'audio/aac', 
   'audio/x-aac', 
   'audio/webm',
+  'audio/webm;codecs=opus',
   'audio/3gpp',
   'audio/3gpp2'
 ]
