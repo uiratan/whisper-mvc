@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { useVoiceRecorder } from '../hooks/useVoiceRecorder'
 import LiveVisualizer from './LiveVisualizer'
 import RecordingPreview from './RecordingPreview'
+import { generateSRT, generateTXT, downloadFile } from '../utils/exportUtils'
 
 interface TranscriptionSegment {
   start: number
@@ -34,7 +35,8 @@ export default function AudioUploader() {
   const [statusType, setStatusType] = useState<'idle' | 'success' | 'error'>('idle')
   const [transcription, setTranscription] = useState<TranscriptionResult | null>(null)
   const [activeTab, setActiveTab] = useState<'upload' | 'record'>('record')
-  
+  const [copyMode, setCopyMode] = useState<'text' | 'timestamps' | null>(null)
+
   const resultsRef = useRef<HTMLDivElement>(null)
   const recorder = useVoiceRecorder()
 
@@ -198,6 +200,54 @@ export default function AudioUploader() {
     const mins = Math.floor(seconds / 60)
     const secs = Math.floor(seconds % 60)
     return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Extract original filename without extension for export naming
+  const getBaseFilename = (): string => {
+    return selectedFile?.name.replace(/\.[^.]+$/, '') || 'transcription'
+  }
+
+  // Copy plain text to clipboard
+  const handleCopyText = async () => {
+    if (!transcription) return
+    try {
+      await navigator.clipboard.writeText(transcription.text)
+      setCopyMode('text')
+      setTimeout(() => setCopyMode(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy text:', err)
+    }
+  }
+
+  // Copy text with timestamps
+  const handleCopyWithTimestamps = async () => {
+    if (!transcription) return
+    try {
+      const formattedText = transcription.segments
+        .map((segment) => `[${formatTimestamp(segment.start)}] ${segment.text}`)
+        .join('\n')
+      await navigator.clipboard.writeText(formattedText)
+      setCopyMode('timestamps')
+      setTimeout(() => setCopyMode(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy timestamped text:', err)
+    }
+  }
+
+  // Export transcription as plain text file
+  const handleExportTXT = () => {
+    if (!transcription) return
+    const content = generateTXT(transcription.text)
+    const filename = `${getBaseFilename()}.txt`
+    downloadFile(content, filename, 'text/plain')
+  }
+
+  // Export transcription as SRT subtitle file
+  const handleExportSRT = () => {
+    if (!transcription) return
+    const content = generateSRT(transcription.segments, getBaseFilename())
+    const filename = `${getBaseFilename()}.srt`
+    downloadFile(content, filename, 'text/plain')
   }
 
   const isRecording = recorder.state === 'recording'
@@ -466,6 +516,65 @@ export default function AudioUploader() {
       {transcription && (
         <div ref={resultsRef} className="mt-6 sm:mt-8 border-t border-gray-200 pt-6 sm:pt-8 scroll-mt-8">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Transcription</h3>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {/* Copy Text Only */}
+            <button
+              onClick={handleCopyText}
+              className="flex items-center gap-1.5 py-2 px-3 sm:px-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-indigo-400 transition-all text-xs sm:text-sm font-medium"
+            >
+              {copyMode === 'text' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              )}
+              <span>Copy Text</span>
+            </button>
+
+            {/* Copy With Timestamps */}
+            <button
+              onClick={handleCopyWithTimestamps}
+              className="flex items-center gap-1.5 py-2 px-3 sm:px-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-indigo-400 transition-all text-xs sm:text-sm font-medium"
+            >
+              {copyMode === 'timestamps' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              )}
+              <span>Copy + Timestamps</span>
+            </button>
+
+            {/* Export TXT */}
+            <button
+              onClick={handleExportTXT}
+              className="flex items-center gap-1.5 py-2 px-3 sm:px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-xs sm:text-sm font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Export TXT</span>
+            </button>
+
+            {/* Export SRT */}
+            <button
+              onClick={handleExportSRT}
+              className="flex items-center gap-1.5 py-2 px-3 sm:px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-xs sm:text-sm font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Export SRT</span>
+            </button>
+          </div>
 
           {/* Full Text */}
           <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
