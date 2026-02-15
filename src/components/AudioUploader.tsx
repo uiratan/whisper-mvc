@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
 
 interface TranscriptionSegment {
   start: number
@@ -32,38 +33,38 @@ export default function AudioUploader() {
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    const validTypes = [
-      'audio/wav', 'audio/x-wav', 
-      'audio/mpeg', 'audio/mp3',
-      'audio/ogg', 
-      'audio/m4a', 'audio/x-m4a', 'audio/mp4',
-      'audio/aac', 'audio/x-aac',
-      'audio/webm',
-      'audio/3gpp', 'audio/3gpp2'
-    ]
-    if (!validTypes.includes(file.type)) {
-      setStatusMessage('Invalid file type. Please select an audio file (WAV, MP3, OGG, M4A, etc.).')
+  const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
+    if (acceptedFiles.length > 0) {
+      setSelectedFile(acceptedFiles[0])
+      setStatusMessage('')
+      setStatusType('idle')
+      setUploadProgress(0)
+    } else if (fileRejections.length > 0) {
+      const error = fileRejections[0].errors[0]
+      let message = 'Invalid file.'
+      if (error.code === 'file-too-large') {
+        message = `File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.`
+      } else if (error.code === 'file-invalid-type') {
+        message = 'Invalid file type. Please select an audio file.'
+      }
+      setStatusMessage(message)
       setStatusType('error')
-      return
     }
+  }, [MAX_FILE_SIZE])
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      setStatusMessage(`File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.`)
-      setStatusType('error')
-      return
-    }
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'audio/*': [
+        '.wav', '.mp3', '.ogg', '.m4a', '.mp4', '.aac', '.webm', '.3gp', '.3g2'
+      ]
+    },
+    maxSize: MAX_FILE_SIZE,
+    multiple: false,
+    disabled: isUploading
+  })
 
-    setSelectedFile(file)
-    setStatusMessage('')
-    setStatusType('idle')
-    setUploadProgress(0)
-  }
+  // Remove the old standalone rejection handler
 
   const handleUpload = async () => {
     if (!selectedFile) return
@@ -163,14 +164,21 @@ export default function AudioUploader() {
 
       {/* File Selection */}
       <div className="mb-6">
-        <label
-          htmlFor="audio-file-input"
-          className="block w-full p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 transition-colors cursor-pointer"
+        <div
+          {...getRootProps()}
+          className={`relative block w-full p-8 border-2 border-dashed rounded-lg transition-all cursor-pointer ${
+            isDragActive
+              ? 'border-indigo-500 bg-indigo-50 scale-[1.02] shadow-md'
+              : 'border-gray-300 hover:border-indigo-400 hover:bg-indigo-50'
+          } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <div className="flex flex-col items-center justify-center">
+          <input {...getInputProps()} id="audio-file-input" />
+          <div className="flex flex-col items-center justify-center text-center">
             {/* File Icon */}
             <svg
-              className="w-12 h-12 text-gray-400 mb-3"
+              className={`w-12 h-12 mb-3 transition-colors ${
+                isDragActive ? 'text-indigo-500' : 'text-gray-400'
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -182,26 +190,22 @@ export default function AudioUploader() {
                 d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
               />
             </svg>
-            <p className="text-gray-700 font-medium">Click to select audio file</p>
-            <p className="text-gray-500 text-sm mt-1">WAV, MP3, OGG, M4A, etc.</p>
+            <p className="text-gray-700 font-medium">
+              {isDragActive ? 'Drop the audio file here' : 'Drag & drop or click to select audio'}
+            </p>
+            <p className="text-gray-500 text-sm mt-1">WAV, MP3, OGG, M4A, etc. (Max 25MB)</p>
           </div>
-        </label>
-        <input
-          id="audio-file-input"
-          type="file"
-          accept="audio/*"
-          onChange={handleFileSelect}
-          disabled={isUploading}
-          className="hidden"
-        />
+        </div>
       </div>
 
       {/* Selected File Info */}
       {selectedFile && (
         <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="font-medium text-gray-800 truncate">{selectedFile.name}</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-800 truncate" title={selectedFile.name}>
+                {selectedFile.name}
+              </p>
               <p className="text-sm text-gray-600">{formatFileSize(selectedFile.size)}</p>
             </div>
             {!isUploading && (

@@ -19,7 +19,7 @@
 **Plans:** 1 plan
 
 Plans:
-- [ ] 03-01-PLAN.md — Integrate `react-dropzone` and implement overlay styling.
+- [x] 03-01-PLAN.md — Integrate `react-dropzone` and implement overlay styling.
 
 **Requirements:**
 - EINP-01: Drag-and-drop support with visual feedback.
@@ -80,7 +80,7 @@ Plans:
 
 | Phase | Status | Requirements | Criteria |
 |-------|--------|--------------|----------|
-| 3 | Pending | 1 | 3 |
+| 3 | Completed | 1 | 3 |
 | 4 | Pending | 2 | 4 |
 | 5 | Pending | 4 | 4 |
 
