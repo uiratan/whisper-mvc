@@ -1,28 +1,28 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-15 | **Current Phase:** 05-output-utilities-ui-polish | **Overall Progress:** 100% (Milestone 2.0 Complete)
+**Last Updated:** 2026-02-15 | **Current Status:** v2.0 SHIPPED | **Overall Progress:** 100% (Ready for v3.0)
 
 ---
 
 ## Project Reference
 
-**Core Value:** Facilitar a entrada de áudio (gravação direta/drag-drop) e a utilidade dos resultados (exportação/cópia).
+**Core Value:** Aplicação de transcrição de áudio com múltiplos métodos de entrada e saída flexível.
 
-**What We're Building:** Milestone 2.0 focused on Enhanced Input (Recording, Drag-and-Drop) and Output (SRT/TXT export, Copy to clipboard).
+**What We've Built:** v2.0 complete with enhanced input methods (drag-and-drop, browser recording) and comprehensive output utilities (export TXT/SRT, copy to clipboard, interactive playback).
 
-**Current Focus:** Phase 5 — Output Utilities & UI Polish.
+**Current Focus:** Ready for deployment or next milestone planning (v3.0+).
 
 ---
 
 ## Current Position
 
-**Roadmap Status:** Executing Milestone 2.0
+**Roadmap Status:** v2.0 SHIPPED & ARCHIVED (2026-02-15)
 
-**Phase:** 05-output-utilities-ui-polish
+**Milestone:** v2.0: Enhanced Input & Output
 
-**Current Plan:** Phase Complete (2 of 2 plans completed)
+**Phases Completed:** 3-5 (3 phases, 5 plans, all complete)
 
-**Progress:** [██████████] 100%
+**Progress:** [██████████] 100% | READY FOR DEPLOYMENT
 
 ---
 
@@ -88,22 +88,32 @@ None.
 
 ## Session Continuity
 
-**Last Action:** Completed quick task 4: Real-time progress streaming with SSE.
+**Last Action:** Completed milestone v2.0 — archived roadmap, requirements, and created git tag.
 
-**Stopped At:** Completed quick-4 (implementar barra de progresso com indicadores de fase)
+**Stopped At:** v2.0 Milestone Complete (2026-02-15 01:30 UTC)
 
-**What Changed Since Last Session:**
-- Quick task 4: Real-time progress tracking with SSE
-  - Implemented Server-Sent Events for streaming progress updates
-  - Added three-phase progress indicator (upload, conversion, transcription)
-  - Backend streams progress events through convertToWav and transcribeAudio callbacks
-  - Frontend consumes SSE stream with fetch + ReadableStream API
-  - Robust error handling with graceful fallback to legacy JSON mode
-  - AbortController pattern for proper cleanup and cancellation
-  - 30-second connection timeout and improved error messages
-- Files modified: src/app/api/upload/route.ts, src/components/AudioUploader.tsx
+**What Changed This Session:**
+- ✅ Milestone v2.0 archived to `.planning/milestones/`
+- ✅ ROADMAP.md reorganized with milestone grouping
+- ✅ PROJECT.md updated with current state (v2.0 shipped)
+- ✅ REQUIREMENTS.md deleted (fresh for next milestone)
+- ✅ Git commit: chore: archive v2.0 milestone
+- ✅ Git tag: v2.0 created with release notes
+- ✅ MILESTONES.md historical record created
+- ✅ STATE.md updated for v2.0 shipped status
 
-**Ready For:** User acceptance testing with real-time progress feedback
+**Requirements Satisfied:** 7/7 (100%)
+- EINP-01: Drag-and-drop ✅
+- EINP-02: Browser recording ✅
+- EINP-03: Real-time feedback ✅
+- EOUT-01: Copy to clipboard ✅
+- EOUT-02: Export TXT/SRT ✅
+- UIUX-01: Status feedback ✅
+- UIUX-02: Segment interaction ✅
+
+**Ready For:**
+- Deploy to production (`git push origin master v2.0`)
+- Start v3.0 milestone (`/gsd:new-milestone`)
 
 
 ---
