@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir, readFile, rename, unlink } from 'fs/promises'
+import { writeFile, mkdir, readFile, copyFile, unlink } from 'fs/promises'
 import path from 'path'
 import { existsSync } from 'fs'
 import ffmpeg from 'fluent-ffmpeg'
@@ -73,8 +73,16 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
   // Use RAM-backed filesystem for temp files (faster I/O)
   const tempDir = existsSync('/dev/shm') ? '/dev/shm' : UPLOAD_DIR
   const tempWavName = `temp-${Date.now()}.wav`
-  const tempWavPath = path.join(tempDir, tempWavName)
-  await rename(wavPath, tempWavPath)
+  let tempWavPath = path.join(tempDir, tempWavName)
+
+  // Copy to RAM disk (can't use rename across filesystems)
+  if (tempDir !== UPLOAD_DIR) {
+    await copyFile(wavPath, tempWavPath)
+    await unlink(wavPath)  // Delete original after successful copy
+  } else {
+    // Same filesystem, just use original path to avoid unnecessary copy
+    tempWavPath = wavPath
+  }
 
   return new Promise((resolve, reject) => {
     const args = [
