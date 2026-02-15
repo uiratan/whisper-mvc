@@ -41,9 +41,11 @@ export default function AudioUploader() {
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number>(0)
   const [seekToTime, setSeekToTime] = useState<number | undefined>(undefined)
   const [activeSegmentIndex, setActiveSegmentIndex] = useState<number | null>(null)
+  const [currentPhase, setCurrentPhase] = useState<'upload' | 'conversion' | 'transcription' | 'complete'>('upload')
 
   const resultsRef = useRef<HTMLDivElement>(null)
   const recorder = useVoiceRecorder()
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
 
@@ -111,6 +113,10 @@ export default function AudioUploader() {
       if (audioUrl) {
         URL.revokeObjectURL(audioUrl)
       }
+      // Abort any ongoing upload
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
     }
   }, [audioUrl])
 
@@ -134,6 +140,7 @@ export default function AudioUploader() {
 
     setIsUploading(true)
     setUploadProgress(0)
+    setCurrentPhase('upload')
     setStatusMessage('Uploading...')
     setStatusType('idle')
     setAudioUrl(null)
@@ -143,56 +150,122 @@ export default function AudioUploader() {
     const formData = new FormData()
     formData.append('file', selectedFile)
 
-    try {
-      // Using XMLHttpRequest for progress tracking
-      const xhr = new XMLHttpRequest()
+    // Create abort controller for cleanup
+    abortControllerRef.current = new AbortController()
 
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100)
-          setUploadProgress(percentComplete)
-        }
+    try {
+      // Try SSE streaming first
+      const response = await fetch('/api/upload?stream=true', {
+        method: 'POST',
+        body: formData,
+        signal: abortControllerRef.current.signal
       })
 
-      // Handle completion
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          const response: UploadResponse = JSON.parse(xhr.responseText)
-          setStatusMessage(response.message || 'Upload successful!')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      // Check if response is SSE
+      const contentType = response.headers.get('content-type')
+      if (contentType?.includes('text/event-stream')) {
+        // SSE streaming mode
+        const reader = response.body?.getReader()
+        if (!reader) {
+          throw new Error('No response body')
+        }
+
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+
+                // Handle error events
+                if (data.error) {
+                  setStatusMessage(data.message || 'Processing failed')
+                  setStatusType('error')
+                  setUploadProgress(0)
+                  setIsUploading(false)
+                  return
+                }
+
+                // Update phase and progress
+                if (data.phase) {
+                  setCurrentPhase(data.phase)
+                  setUploadProgress(data.progress || 0)
+
+                  // Update status message based on phase
+                  if (data.phase === 'upload') {
+                    setStatusMessage('Uploading...')
+                  } else if (data.phase === 'conversion') {
+                    setStatusMessage('Converting to WAV...')
+                  } else if (data.phase === 'transcription') {
+                    setStatusMessage('Transcribing...')
+                  } else if (data.phase === 'complete') {
+                    setStatusMessage('Complete!')
+                    setStatusType('success')
+
+                    // Store transcription result
+                    if (data.transcription) {
+                      setTranscription(data.transcription)
+                      // Create audio URL from the selected file for playback
+                      if (selectedFile) {
+                        const url = URL.createObjectURL(selectedFile)
+                        setAudioUrl(url)
+                      }
+                    }
+
+                    setIsUploading(false)
+                  }
+                }
+              } catch (parseError) {
+                console.error('Failed to parse SSE data:', parseError)
+              }
+            }
+          }
+        }
+      } else {
+        // Fallback to JSON response (legacy mode)
+        const result: UploadResponse = await response.json()
+
+        if (result.success && result.transcription) {
+          setTranscription(result.transcription)
+          setStatusMessage(result.message || 'Upload successful!')
           setStatusType('success')
           setUploadProgress(100)
 
-          // Store transcription if present
-          if (response.transcription) {
-            setTranscription(response.transcription)
-            // Create audio URL from the selected file for playback
-            if (selectedFile) {
-              const url = URL.createObjectURL(selectedFile)
-              setAudioUrl(url)
-            }
+          if (selectedFile) {
+            const url = URL.createObjectURL(selectedFile)
+            setAudioUrl(url)
           }
         } else {
-          const errorResponse: UploadResponse = JSON.parse(xhr.responseText)
-          setStatusMessage(errorResponse.message || 'Upload failed')
+          setStatusMessage(result.message || 'Upload failed')
           setStatusType('error')
           setUploadProgress(0)
         }
-        setIsUploading(false)
-      })
 
-      // Handle errors
-      xhr.addEventListener('error', () => {
-        setStatusMessage('Network error occurred during upload')
-        setStatusType('error')
-        setUploadProgress(0)
         setIsUploading(false)
-      })
+      }
+    } catch (error: any) {
+      // Don't show error if request was aborted (user canceled)
+      if (error.name === 'AbortError') {
+        console.log('Upload canceled by user')
+        return
+      }
 
-      // Send the request
-      xhr.open('POST', '/api/upload')
-      xhr.send(formData)
-    } catch (error) {
+      console.error('Upload error:', error)
       setStatusMessage('Upload failed. Please try again.')
       setStatusType('error')
       setUploadProgress(0)
@@ -201,8 +274,14 @@ export default function AudioUploader() {
   }
 
   const handleClear = () => {
+    // Abort any ongoing upload
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
     setSelectedFile(null)
     setUploadProgress(0)
+    setCurrentPhase('upload')
     setStatusMessage('')
     setStatusType('idle')
     setTranscription(null)
@@ -491,9 +570,50 @@ export default function AudioUploader() {
       {uploadProgress > 0 && (
         <div className="mb-4 sm:mb-6">
           <div className="flex justify-between mb-1 sm:mb-2">
-            <span className="text-[10px] sm:text-sm font-medium text-gray-700">Progress</span>
+            <span className="text-[10px] sm:text-sm font-medium text-gray-700">
+              {currentPhase === 'upload' && 'Uploading...'}
+              {currentPhase === 'conversion' && 'Converting to WAV...'}
+              {currentPhase === 'transcription' && 'Transcribing...'}
+              {currentPhase === 'complete' && 'Complete!'}
+            </span>
             <span className="text-[10px] sm:text-sm font-medium text-indigo-600">{uploadProgress}%</span>
           </div>
+
+          {/* Phase indicators */}
+          <div className="flex gap-2 mb-2">
+            <div
+              className={`flex-1 h-1.5 rounded ${
+                currentPhase === 'upload'
+                  ? 'bg-indigo-600 animate-pulse'
+                  : ['conversion', 'transcription', 'complete'].includes(currentPhase)
+                  ? 'bg-green-500'
+                  : 'bg-gray-200'
+              }`}
+              title="Upload"
+            />
+            <div
+              className={`flex-1 h-1.5 rounded ${
+                currentPhase === 'conversion'
+                  ? 'bg-indigo-600 animate-pulse'
+                  : ['transcription', 'complete'].includes(currentPhase)
+                  ? 'bg-green-500'
+                  : 'bg-gray-200'
+              }`}
+              title="Conversion"
+            />
+            <div
+              className={`flex-1 h-1.5 rounded ${
+                currentPhase === 'transcription'
+                  ? 'bg-indigo-600 animate-pulse'
+                  : currentPhase === 'complete'
+                  ? 'bg-green-500'
+                  : 'bg-gray-200'
+              }`}
+              title="Transcription"
+            />
+          </div>
+
+          {/* Main progress bar */}
           <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-3 overflow-hidden">
             <div
               className="bg-indigo-600 h-full transition-all duration-300 ease-out"
