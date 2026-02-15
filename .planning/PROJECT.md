@@ -1,12 +1,22 @@
 # Whisper Test
 
-## Current State (v1.0)
-Proof of Concept complete. The application successfully uploads audio files, converts them to the required format, transcribes them using local `whisper.cpp`, and displays results with formatted timestamps.
+## Current State (v2.0)
+
+The application provides a complete audio transcription workflow with multiple input methods and flexible output options:
+
+- **Input:** File picker, drag-and-drop, and native browser recording (with real-time waveform visualization)
+- **Processing:** Audio format conversion and local transcription using `whisper.cpp`
+- **Output:** Transcription display with interactive playback, copy to clipboard (plain + timestamped), and export to TXT/SRT formats
+- **UX:** Real-time progress feedback, enhanced typography, and bidirectional audio/text synchronization
+
+All v2.0 requirements satisfied. Production-ready for immediate deployment.
 
 ## Next Milestone Goals
-- **Enhanced Input**: In-browser recording and drag-and-drop support.
-- **Enhanced Output**: Export to SRT/TXT and copy to clipboard.
-- **UI/UX Polishing**: Improved feedback and segment interaction.
+
+Potential areas for v3.0+:
+- **Accessibility:** WCAG compliance audit and improvements
+- **Mobile:** Enhanced UI/UX for mobile and tablet devices
+- **Advanced Features:** Real-time transcription, multi-file upload, audio filters
 
 ---
 
@@ -41,4 +51,4 @@ Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando 
 </details>
 
 ---
-*Last updated: 2026-02-14 | v1.0 Shipped*
+*Last updated: 2026-02-15 after v2.0 milestone*
