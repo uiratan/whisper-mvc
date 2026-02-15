@@ -149,40 +149,39 @@ async function transcribeAudio(wavPath: string, onProgress?: ProgressCallback): 
 
       // Parse progress from whisper.cpp stderr output
       if (onProgress) {
-        // Look for progress indicators in whisper.cpp output
-        // Whisper doesn't output precise percentages, so we use heuristics
-
-        // Progress pattern 1: whisper_print_progress_callback output
+        // Priority 1: Real progress from whisper_print_progress_callback
         const progressMatch = msg.match(/progress\s*=\s*(\d+)%/);
         if (progressMatch) {
           const percent = parseInt(progressMatch[1], 10)
-          lastProgress = Math.min(percent, 99)
-          onProgress({ phase: 'transcription', progress: lastProgress })
-        }
-
-        // Progress pattern 2: Time-based estimation (first 10 seconds of processing)
-        const elapsed = Date.now() - progressStartTime
-        if (elapsed < 10000 && lastProgress === 0) {
-          // Gradually increase from 0 to 50% over first 10 seconds
-          const estimatedProgress = Math.min(Math.floor((elapsed / 10000) * 50), 50)
-          if (estimatedProgress > lastProgress) {
-            lastProgress = estimatedProgress
+          if (percent > lastProgress) {
+            lastProgress = Math.min(percent, 99)
             onProgress({ phase: 'transcription', progress: lastProgress })
           }
         }
-
-        // Progress pattern 3: Detect processing activity
-        if (msg.includes('processing') || msg.includes('load time') || msg.includes('mel time')) {
-          if (lastProgress < 20) {
-            lastProgress = 20
+        // Priority 2: Detect near completion
+        else if (msg.includes('whisper_print_timings')) {
+          if (95 > lastProgress) {
+            lastProgress = 95
             onProgress({ phase: 'transcription', progress: lastProgress })
           }
         }
+        // Priority 3: Fallback heuristics (only if no real progress yet)
+        else {
+          // Heuristic 1: Detect processing start
+          if ((msg.includes('processing') || msg.includes('load time') || msg.includes('mel time')) && lastProgress < 5) {
+            lastProgress = 5
+            onProgress({ phase: 'transcription', progress: lastProgress })
+          }
 
-        // Progress pattern 4: Detect near completion
-        if (msg.includes('whisper_print_timings')) {
-          lastProgress = 95
-          onProgress({ phase: 'transcription', progress: lastProgress })
+          // Heuristic 2: Time-based estimation (first 10 seconds)
+          const elapsed = Date.now() - progressStartTime
+          if (elapsed < 10000 && lastProgress < 10) {
+            const estimatedProgress = Math.min(Math.floor((elapsed / 10000) * 10), 10)
+            if (estimatedProgress > lastProgress) {
+              lastProgress = estimatedProgress
+              onProgress({ phase: 'transcription', progress: lastProgress })
+            }
+          }
         }
       }
     })
