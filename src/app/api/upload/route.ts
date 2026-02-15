@@ -92,7 +92,7 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
       '--output-file', tempWavPath.replace('.wav', ''),
       '-t', process.env.WHISPER_THREADS || '4',        // Multi-threading for faster processing
       '-bs', '1',                                       // Beam size 1 for greedy decoding (faster)
-      '--no-speech-thr', '0.6',                        // Skip silent segments
+      '--no-speech-thold', '0.6',                       // Skip silent segments
       '-pp'                                             // Enable parallel processing
     ]
 
