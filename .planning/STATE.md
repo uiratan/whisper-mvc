@@ -38,14 +38,10 @@ See: `.planning/PROJECT.md` (updated 2026-02-15)
 | 4.0 | 04-01, 04-02 | 1.5h | 4 | 5 | 2026-02-14 |
 | 5.0 | 05-01, 05-02 | 12m | 4 | 4 | 2026-02-15 |
 
-| Task | Description | Files | Date |
-|------|-------------|-------|------|
-| v1.0 Shipped | Proof of Concept successfully delivered and archived. | - | 2026-02-14 |
-| Drag-Drop | Integrated `react-dropzone` with visual feedback & bug fixes. | `package.json`, `AudioUploader.tsx` | 2026-02-14 |
-| Recording | Browser recording, live visualization, and waveform preview. | `useVoiceRecorder.ts`, `LiveVisualizer.tsx`, `RecordingPreview.tsx` | 2026-02-14 |
-| Export/Copy | Client-side SRT/TXT export and clipboard integration with visual feedback. | `exportUtils.ts`, `AudioUploader.tsx` | 2026-02-15 |
-| Interactive Playback | HTML5 audio player with click-to-seek and real-time segment highlighting. | `TranscriptionPlayer.tsx`, `AudioUploader.tsx` | 2026-02-15 |
-| v2.0 Shipped | Enhanced Input & Output delivered and archived (7/7 requirements, v2.0 tag). | `.planning/milestones/v2.0-*` | 2026-02-15 |
+| Task | Description | Date |
+|------|-------------|------|
+| v1.0 Shipped | Proof of Concept — upload, transcribe, display. | 2026-02-14 |
+| v2.0 Shipped | Enhanced Input & Output — drag-drop, recording, export, playback (7/7 requirements). | 2026-02-15 |
 
 ### Quick Tasks Completed
 
