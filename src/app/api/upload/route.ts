@@ -42,6 +42,7 @@ async function convertToWav(inputPath: string): Promise<string> {
 
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
+      .addOption('-threads', '2')  // Parallel audio conversion
       .audioFrequency(16000)
       .audioChannels(1)
       .audioCodec('pcm_s16le')
@@ -56,21 +57,23 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
   const whisperBinary = process.env.WHISPER_CPP_PATH || 'whisper.cpp'
   const modelPath = process.env.WHISPER_MODEL_PATH || 'models/ggml-base.bin'
 
-  // Diagnostic: Check files and sizes
-  try {
-    const { execSync } = require('child_process');
-    console.log(`[Diagnostic] Binary info: ${execSync(`ls -lh ${whisperBinary}`).toString()}`);
-    console.log(`[Diagnostic] Model info: ${execSync(`ls -lh ${modelPath}`).toString()}`);
-    console.log(`[Diagnostic] WAV info: ${execSync(`ls -lh ${wavPath}`).toString()}`);
-    // Try to run help instead of version
-    console.log(`[Diagnostic] Binary help (first line): ${execSync(`${whisperBinary} -h 2>&1 | head -n 1`).toString()}`);
-  } catch (diagError: any) {
-    console.warn(`[Diagnostic Failed] ${diagError.message}`);
+  // Diagnostic: Check files and sizes (only in debug mode)
+  if (process.env.WHISPER_DEBUG === 'true') {
+    try {
+      const { execSync } = require('child_process');
+      console.log(`[Diagnostic] Binary info: ${execSync(`ls -lh ${whisperBinary}`).toString()}`);
+      console.log(`[Diagnostic] Model info: ${execSync(`ls -lh ${modelPath}`).toString()}`);
+      console.log(`[Diagnostic] WAV info: ${execSync(`ls -lh ${wavPath}`).toString()}`);
+      console.log(`[Diagnostic] Binary help (first line): ${execSync(`${whisperBinary} -h 2>&1 | head -n 1`).toString()}`);
+    } catch (diagError: any) {
+      console.warn(`[Diagnostic Failed] ${diagError.message}`);
+    }
   }
 
-  // Simplify filename for whisper.cpp (it can be picky with paths)
+  // Use RAM-backed filesystem for temp files (faster I/O)
+  const tempDir = existsSync('/dev/shm') ? '/dev/shm' : UPLOAD_DIR
   const tempWavName = `temp-${Date.now()}.wav`
-  const tempWavPath = path.join(UPLOAD_DIR, tempWavName)
+  const tempWavPath = path.join(tempDir, tempWavName)
   await rename(wavPath, tempWavPath)
 
   return new Promise((resolve, reject) => {
