@@ -141,7 +141,7 @@ export default function AudioUploader() {
     setIsUploading(true)
     setUploadProgress(0)
     setCurrentPhase('upload')
-    setStatusMessage('Uploading...')
+    setStatusMessage('Connecting...')
     setStatusType('idle')
     setAudioUrl(null)
     setActiveSegmentIndex(null)
@@ -153,13 +153,25 @@ export default function AudioUploader() {
     // Create abort controller for cleanup
     abortControllerRef.current = new AbortController()
 
+    // Connection timeout (30 seconds)
+    const connectionTimeout = setTimeout(() => {
+      if (abortControllerRef.current) {
+        console.warn('SSE connection timeout, aborting')
+        abortControllerRef.current.abort()
+      }
+    }, 30000)
+
     try {
       // Try SSE streaming first
+      setStatusMessage('Uploading...')
       const response = await fetch('/api/upload?stream=true', {
         method: 'POST',
         body: formData,
         signal: abortControllerRef.current.signal
       })
+
+      // Clear connection timeout once we get a response
+      clearTimeout(connectionTimeout)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -176,68 +188,86 @@ export default function AudioUploader() {
 
         const decoder = new TextDecoder()
         let buffer = ''
+        let lastProgressUpdate = Date.now()
 
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
 
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n')
+            lastProgressUpdate = Date.now()
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split('\n')
 
-          // Keep the last incomplete line in the buffer
-          buffer = lines.pop() || ''
+            // Keep the last incomplete line in the buffer
+            buffer = lines.pop() || ''
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6))
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6))
 
-                // Handle error events
-                if (data.error) {
-                  setStatusMessage(data.message || 'Processing failed')
-                  setStatusType('error')
-                  setUploadProgress(0)
-                  setIsUploading(false)
-                  return
-                }
-
-                // Update phase and progress
-                if (data.phase) {
-                  setCurrentPhase(data.phase)
-                  setUploadProgress(data.progress || 0)
-
-                  // Update status message based on phase
-                  if (data.phase === 'upload') {
-                    setStatusMessage('Uploading...')
-                  } else if (data.phase === 'conversion') {
-                    setStatusMessage('Converting to WAV...')
-                  } else if (data.phase === 'transcription') {
-                    setStatusMessage('Transcribing...')
-                  } else if (data.phase === 'complete') {
-                    setStatusMessage('Complete!')
-                    setStatusType('success')
-
-                    // Store transcription result
-                    if (data.transcription) {
-                      setTranscription(data.transcription)
-                      // Create audio URL from the selected file for playback
-                      if (selectedFile) {
-                        const url = URL.createObjectURL(selectedFile)
-                        setAudioUrl(url)
-                      }
-                    }
-
+                  // Handle error events
+                  if (data.error) {
+                    setStatusMessage(data.message || 'Processing failed')
+                    setStatusType('error')
+                    setUploadProgress(0)
                     setIsUploading(false)
+                    reader.cancel()
+                    return
                   }
+
+                  // Update phase and progress
+                  if (data.phase) {
+                    setCurrentPhase(data.phase)
+                    setUploadProgress(data.progress || 0)
+
+                    // Update status message based on phase
+                    if (data.phase === 'upload') {
+                      setStatusMessage('Uploading...')
+                    } else if (data.phase === 'conversion') {
+                      setStatusMessage('Converting audio...')
+                    } else if (data.phase === 'transcription') {
+                      setStatusMessage('Transcribing audio...')
+                    } else if (data.phase === 'complete') {
+                      setStatusMessage('Complete!')
+                      setStatusType('success')
+
+                      // Store transcription result
+                      if (data.transcription) {
+                        setTranscription(data.transcription)
+                        // Create audio URL from the selected file for playback
+                        if (selectedFile) {
+                          const url = URL.createObjectURL(selectedFile)
+                          setAudioUrl(url)
+                        }
+                      }
+
+                      setIsUploading(false)
+                    }
+                  }
+                } catch (parseError) {
+                  console.error('Failed to parse SSE data:', parseError)
+                  // Don't fail on individual parse errors, continue processing
                 }
-              } catch (parseError) {
-                console.error('Failed to parse SSE data:', parseError)
               }
             }
           }
+        } catch (streamError: any) {
+          if (streamError.name === 'AbortError') {
+            console.log('SSE stream canceled by user')
+            return
+          }
+          throw streamError
+        }
+
+        // If we reach here without completing, something went wrong
+        if (currentPhase !== 'complete' && isUploading) {
+          throw new Error('SSE stream ended unexpectedly')
         }
       } else {
         // Fallback to JSON response (legacy mode)
+        console.log('SSE not available, using legacy JSON mode')
         const result: UploadResponse = await response.json()
 
         if (result.success && result.transcription) {
@@ -245,6 +275,7 @@ export default function AudioUploader() {
           setStatusMessage(result.message || 'Upload successful!')
           setStatusType('success')
           setUploadProgress(100)
+          setCurrentPhase('complete')
 
           if (selectedFile) {
             const url = URL.createObjectURL(selectedFile)
@@ -259,14 +290,32 @@ export default function AudioUploader() {
         setIsUploading(false)
       }
     } catch (error: any) {
+      // Clear connection timeout on error
+      clearTimeout(connectionTimeout)
+
       // Don't show error if request was aborted (user canceled)
       if (error.name === 'AbortError') {
         console.log('Upload canceled by user')
+        setStatusMessage('Upload canceled')
+        setStatusType('idle')
+        setUploadProgress(0)
+        setIsUploading(false)
         return
       }
 
       console.error('Upload error:', error)
-      setStatusMessage('Upload failed. Please try again.')
+
+      // Provide more specific error messages
+      let errorMessage = 'Upload failed. Please try again.'
+      if (error.message?.includes('HTTP error! status: 413')) {
+        errorMessage = 'File too large. Maximum size is 25MB.'
+      } else if (error.message?.includes('HTTP error! status: 400')) {
+        errorMessage = 'Invalid file format or request.'
+      } else if (error.message?.includes('timeout') || error.message?.includes('Network')) {
+        errorMessage = 'Connection timeout. Please check your network and try again.'
+      }
+
+      setStatusMessage(errorMessage)
       setStatusType('error')
       setUploadProgress(0)
       setIsUploading(false)
