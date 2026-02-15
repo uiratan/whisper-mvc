@@ -4,7 +4,7 @@
 
 - **v1.0**: [Proof of Concept (2026-02-14)](milestones/v1.0-ROADMAP.md)
 - **v2.0**: [Enhanced Input & Output (2026-02-15)](milestones/v2.0-ROADMAP.md)
-- **v2.1**: CI/CD & Docs (in progress)
+- **v2.1**: [CI/CD & Docs (2026-02-15)](milestones/v2.1-ROADMAP.md)
 
 ---
 
@@ -29,33 +29,15 @@
 
 ---
 
-## 🚧 v2.1 CI/CD & Docs (In Progress)
+## Phases (v2.1)
 
-**Milestone Goal:** Automate deployment and bring documentation up to date.
+<details>
+<summary>✅ v2.1 Phases 6-7 (Shipped 2026-02-15)</summary>
 
-### Phase 6: CI/CD Pipeline ✓
-**Goal**: Automated deployment to Fly.io triggered by git tags
-**Depends on**: Nothing (infrastructure enhancement)
-**Requirements**: CICD-01, CICD-02, CICD-03
-**Status**: ✅ Complete — 2026-02-15
-**Verification**: 3/3 must-haves passed
+- [x] Phase 6: CI/CD Pipeline (1/1 plan) — completed 2026-02-15
+- [x] Phase 7: Documentation (1/1 plan) — completed 2026-02-15
 
-Plans:
-- [x] 06-01-PLAN.md — GitHub Actions workflow with tag trigger, Fly.io deployment, health checks
-
-### Phase 7: Documentation
-**Goal**: README accurately reflects current system capabilities
-**Depends on**: Phase 6 (documents CI/CD pipeline setup)
-**Requirements**: DOCS-01, DOCS-02, DOCS-03, DOCS-04
-**Success Criteria** (what must be TRUE):
-  1. README lists all current features (input methods, processing, output options)
-  2. Developer can set up local environment following README instructions
-  3. README explains deployment process and pipeline workflow
-  4. Screenshots show current UI state
-**Plans**: 1 plan
-
-Plans:
-- [ ] 07-01-PLAN.md — Capture UI screenshots and update README with comprehensive documentation
+</details>
 
 ---
 
@@ -65,9 +47,9 @@ Plans:
 |-----------|--------|-------|--------|---------|
 | v1.0 | 1-2 | 4 | ✅ Complete | 2026-02-14 |
 | v2.0 | 3-5 | 5 | ✅ Complete | 2026-02-15 |
-| v2.1 | 6-7 | 2 | 🚧 In progress | - |
-| **Total** | **7** | **11** | **67%** | - |
+| v2.1 | 6-7 | 2 | ✅ Complete | 2026-02-15 |
+| **Total** | **7** | **11** | **100%** | - |
 
 ---
 
-*Roadmap updated: 2026-02-15 after Phase 7 planning*
+*Roadmap updated: 2026-02-15 after Phase 7 completion*
