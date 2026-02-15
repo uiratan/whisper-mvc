@@ -1,6 +1,6 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-15 | **Current Status:** v2.1 IN PROGRESS | **Phase:** 6 - CI/CD Pipeline
+**Last Updated:** 2026-02-15 | **Current Status:** v2.1 COMPLETE | **Phase:** 7 - Documentation
 
 ---
 
@@ -16,12 +16,12 @@ See: `.planning/PROJECT.md` (updated 2026-02-15)
 
 ## Current Position
 
-Phase: 6 of 7 (CI/CD Pipeline)
+Phase: 7 of 7 (Documentation)
 Plan: 1 of 1 complete
 Status: Phase complete
-Last activity: 2026-02-15 — Completed 06-01-PLAN.md (tag-triggered deployment pipeline)
+Last activity: 2026-02-15 — Completed 07-01-PLAN.md (comprehensive README with screenshots)
 
-Progress: [████████░░░░░░░░░░░░] 43% (6 of 14 total phases complete)
+Progress: [██████████░░░░░░░░░░] 50% (7 of 14 total phases complete)
 
 **Milestones Completed:**
 
@@ -29,8 +29,9 @@ Progress: [████████░░░░░░░░░░░░] 43% (6 
 |-----------|--------|-------|---------|
 | v1.0 Proof of Concept | 1-2 | 4 | 2026-02-14 |
 | v2.0 Enhanced Input & Output | 3-5 | 5 | 2026-02-15 |
+| v2.1 CI/CD & Documentation | 6-7 | 2 | 2026-02-15 |
 
-**Total:** 6 phases, 10 plans shipped
+**Total:** 7 phases, 11 plans shipped
 
 ---
 
@@ -43,11 +44,13 @@ Progress: [████████░░░░░░░░░░░░] 43% (6 
 | 4.0 | 04-01, 04-02 | 1.5h | 4 | 5 | 2026-02-14 |
 | 5.0 | 05-01, 05-02 | 12m | 4 | 4 | 2026-02-15 |
 | 6.0 | 06-01 | 20m | 3 | 1 | 2026-02-15 |
+| 7.0 | 07-01 | 1.5m | 2 | 4 | 2026-02-15 |
 
 | Task | Description | Date |
 |------|-------------|------|
 | v1.0 Shipped | Proof of Concept — upload, transcribe, display. | 2026-02-14 |
 | v2.0 Shipped | Enhanced Input & Output — drag-drop, recording, export, playback (7/7 requirements). | 2026-02-15 |
+| v2.1 Shipped | CI/CD & Documentation — GitHub Actions deployment, comprehensive README with screenshots (7/7 requirements). | 2026-02-15 |
 
 ### Quick Tasks Completed
 
@@ -70,6 +73,8 @@ Recent decisions affecting v2.1:
 - **Phase 6 - CI/CD**: Use --remote-only flag to build Docker images on Fly.io builders instead of GitHub runners
 - **Phase 6 - CI/CD**: 30-second stabilization wait before health checks to allow app startup
 - **Phase 6 - CI/CD**: Combined automated (workflow) and manual (secret configuration) tasks for security
+- **Phase 7 - Documentation**: Screenshot format JPEG instead of PNG (user-captured files)
+- **Phase 7 - Documentation**: Added Privacy & Security section (critical for local AI positioning)
 
 ### Blockers
 
@@ -85,9 +90,12 @@ None.
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 6 (CI/CD Pipeline) — tag-triggered deployment pipeline to Fly.io operational.
+**Last Action:** Completed Phase 7 (Documentation) — comprehensive README with screenshots, all v2.0/v2.1 features documented.
+
+**v2.1 Milestone Complete:** All 7 requirements satisfied (3 CICD + 4 DOCS)
 
 **Ready For:**
-- `/gsd:plan-phase 7` to create documentation update plan
+- Tag release: `git tag v2.1.0 && git push origin v2.1.0` to trigger automated deployment
+- Future enhancements (v3.0+): accessibility compliance, mobile optimizations, player customization
 
 ---
