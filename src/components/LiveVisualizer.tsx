@@ -32,10 +32,14 @@ export default function LiveVisualizer({ stream }: LiveVisualizerProps) {
     audioContextRef.current = audioContext
     analyserRef.current = analyser
 
-    const draw = () => {
-      const width = canvas.width
-      const height = canvas.height
+    // Create gradient once (performance optimization)
+    const width = canvas.width
+    const height = canvas.height
+    const gradient = canvasCtx.createLinearGradient(0, height, 0, 0)
+    gradient.addColorStop(0, '#6366f1') // indigo-500
+    gradient.addColorStop(1, '#818cf8') // indigo-400
 
+    const draw = () => {
       animationFrameRef.current = requestAnimationFrame(draw)
       analyser.getByteFrequencyData(dataArray)
 
@@ -47,17 +51,11 @@ export default function LiveVisualizer({ stream }: LiveVisualizerProps) {
       let barHeight
       let x = 0
 
+      canvasCtx.fillStyle = gradient
+
       for (let i = 0; i < bufferLength; i++) {
         barHeight = (dataArray[i] / 255) * height
-
-        // Gradient color
-        const gradient = canvasCtx.createLinearGradient(0, height, 0, 0)
-        gradient.addColorStop(0, '#6366f1') // indigo-500
-        gradient.addColorStop(1, '#818cf8') // indigo-400
-
-        canvasCtx.fillStyle = gradient
         canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight)
-
         x += barWidth + 1
       }
     }

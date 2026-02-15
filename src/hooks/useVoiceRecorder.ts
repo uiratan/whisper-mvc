@@ -46,9 +46,11 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
     ]
     for (const type of types) {
       if (MediaRecorder.isTypeSupported(type)) {
+        console.log('[VoiceRecorder] Using MIME type:', type)
         return type
       }
     }
+    console.warn('[VoiceRecorder] No supported MIME type found, using default')
     return ''
   }
 
@@ -102,21 +104,44 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       chunksRef.current = []
       setDuration(0)
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100
+        }
+      })
       setMediaStream(stream)
 
       const mimeType = getSupportedMimeType()
-      const options = mimeType ? { mimeType } : {}
+      const options: MediaRecorderOptions = mimeType
+        ? {
+            mimeType,
+            audioBitsPerSecond: 128000  // 128kbps for good quality
+          }
+        : { audioBitsPerSecond: 128000 }
+
       const recorder = new MediaRecorder(stream, options)
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data)
+          console.log(`[VoiceRecorder] Chunk received: ${event.data.size} bytes (total chunks: ${chunksRef.current.length})`)
+        } else {
+          console.warn('[VoiceRecorder] Empty chunk received')
         }
       }
 
+      recorder.onerror = (event) => {
+        console.error('[VoiceRecorder] MediaRecorder error:', event)
+        setState('idle')
+      }
+
       recorder.onstop = () => {
+        console.log(`[VoiceRecorder] Recording stopped. Total chunks: ${chunksRef.current.length}`)
         const blob = new Blob(chunksRef.current, { type: mimeType || recorder.mimeType })
+        console.log(`[VoiceRecorder] Final blob size: ${blob.size} bytes`)
         const url = URL.createObjectURL(blob)
         setRecordingBlob(blob)
         setRecordingUrl(url)
@@ -124,7 +149,11 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
       }
 
       mediaRecorderRef.current = recorder
-      recorder.start()
+
+      // Request data every 1 second to avoid losing large buffers
+      recorder.start(1000)
+      console.log('[VoiceRecorder] Recording started with 1s timeslice')
+
       setState('recording')
       startTimer()
     } catch (err: any) {
