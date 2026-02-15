@@ -8,8 +8,22 @@ import { spawn } from 'child_process'
 const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads')
 
-// Allowed MIME types
-const ALLOWED_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg']
+// Allowed MIME types - expanded to support mobile recordings
+const ALLOWED_TYPES = [
+  'audio/wav', 
+  'audio/x-wav', 
+  'audio/mpeg', 
+  'audio/mp3',
+  'audio/ogg', 
+  'audio/m4a', 
+  'audio/x-m4a', 
+  'audio/mp4', 
+  'audio/aac', 
+  'audio/x-aac', 
+  'audio/webm',
+  'audio/3gpp',
+  'audio/3gpp2'
+]
 
 interface TranscriptionSegment {
   start: number

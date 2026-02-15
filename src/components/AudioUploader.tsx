@@ -37,9 +37,17 @@ export default function AudioUploader() {
     if (!file) return
 
     // Validate file type
-    const validTypes = ['audio/wav', 'audio/mpeg', 'audio/ogg']
+    const validTypes = [
+      'audio/wav', 'audio/x-wav', 
+      'audio/mpeg', 'audio/mp3',
+      'audio/ogg', 
+      'audio/m4a', 'audio/x-m4a', 'audio/mp4',
+      'audio/aac', 'audio/x-aac',
+      'audio/webm',
+      'audio/3gpp', 'audio/3gpp2'
+    ]
     if (!validTypes.includes(file.type)) {
-      setStatusMessage('Invalid file type. Please select a .wav, .mp3, or .ogg file.')
+      setStatusMessage('Invalid file type. Please select an audio file (WAV, MP3, OGG, M4A, etc.).')
       setStatusType('error')
       return
     }
@@ -149,7 +157,7 @@ export default function AudioUploader() {
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">Upload Audio File</h2>
         <p className="text-gray-600 text-sm">
-          Select an audio file (.wav, .mp3, or .ogg) up to 25MB
+          Select an audio file (WAV, MP3, OGG, M4A, etc.) up to 25MB
         </p>
       </div>
 
@@ -175,13 +183,13 @@ export default function AudioUploader() {
               />
             </svg>
             <p className="text-gray-700 font-medium">Click to select audio file</p>
-            <p className="text-gray-500 text-sm mt-1">WAV, MP3, or OGG</p>
+            <p className="text-gray-500 text-sm mt-1">WAV, MP3, OGG, M4A, etc.</p>
           </div>
         </label>
         <input
           id="audio-file-input"
           type="file"
-          accept=".wav,.mp3,.ogg,audio/wav,audio/mpeg,audio/ogg"
+          accept="audio/*"
           onChange={handleFileSelect}
           disabled={isUploading}
           className="hidden"

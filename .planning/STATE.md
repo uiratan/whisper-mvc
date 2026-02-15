@@ -40,6 +40,7 @@
 | Dockerfile Setup | Created a robust, self-contained Dockerfile using static build of whisper-cli. Includes automatic file cleanup and diagnostics. | `Dockerfile`, `.dockerignore` | 2026-02-14 |
 | Repository Setup | Configured remote origin to https://github.com/uiratan/whisper-mvc | - | 2026-02-14 |
 | Documentation | Created a professional README.md with badges, architecture details, and setup guides. | `README.md` | 2026-02-14 |
+| Mobile Upload Fix | Expanded supported audio MIME types (M4A, AAC, WEBM, 3GP) to allow uploads from mobile voice recorders. | `src/app/api/upload/route.ts`, `src/components/AudioUploader.tsx` | 2026-02-14 |
 
 | Metric | Value | Target |
 |--------|-------|--------|
@@ -81,6 +82,8 @@
 
 11. **Hover effects on segments (02-02):** Added indigo hover state to provide visual feedback and improve UX
 
+12. **Expanded Audio Format Support (Quick Task):** Added support for M4A, AAC, WEBM, and 3GP formats to allow uploads from mobile voice recorders, leveraging FFmpeg's broad format support.
+
 ### Todos
 
 - [x] User reviews and approves ROADMAP.md
@@ -121,6 +124,7 @@ None — project complete!
 - Added Tailwind styling with hover effects
 - Human verification confirmed end-to-end flow working perfectly
 - All 7 requirements fulfilled (UPLD-01, UPLD-02, TRNS-01, TRNS-02, TRNS-03, DISP-01, DISP-02)
+- **Quick Task:** Fixed "Invalid file type" on mobile by expanding ALLOWED_TYPES to include M4A, AAC, WEBM, and 3GP.
 
 **Ready For:** Project is complete! Core value achieved: "Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando na tela."
 
