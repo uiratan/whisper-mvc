@@ -152,10 +152,10 @@ async function transcribeAudio(wavPath: string, onProgress?: ProgressCallback): 
         // Look for progress indicators in whisper.cpp output
         // Whisper doesn't output precise percentages, so we use heuristics
 
-        // Progress pattern 1: Processing audio segments
-        const processingMatch = msg.match(/\[(\d+)%\]/);
-        if (processingMatch) {
-          const percent = parseInt(processingMatch[1], 10)
+        // Progress pattern 1: whisper_print_progress_callback output
+        const progressMatch = msg.match(/progress\s*=\s*(\d+)%/);
+        if (progressMatch) {
+          const percent = parseInt(progressMatch[1], 10)
           lastProgress = Math.min(percent, 99)
           onProgress({ phase: 'transcription', progress: lastProgress })
         }
