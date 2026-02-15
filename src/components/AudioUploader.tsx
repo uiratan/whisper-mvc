@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { useVoiceRecorder } from '../hooks/useVoiceRecorder'
 import LiveVisualizer from './LiveVisualizer'
 import RecordingPreview from './RecordingPreview'
+import TranscriptionPlayer from './TranscriptionPlayer'
 import { generateSRT, generateTXT, downloadFile } from '../utils/exportUtils'
 
 interface TranscriptionSegment {
@@ -36,6 +37,10 @@ export default function AudioUploader() {
   const [transcription, setTranscription] = useState<TranscriptionResult | null>(null)
   const [activeTab, setActiveTab] = useState<'upload' | 'record'>('record')
   const [copyMode, setCopyMode] = useState<'text' | 'timestamps' | null>(null)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number>(0)
+  const [seekToTime, setSeekToTime] = useState<number | undefined>(undefined)
+  const [activeSegmentIndex, setActiveSegmentIndex] = useState<number | null>(null)
 
   const resultsRef = useRef<HTMLDivElement>(null)
   const recorder = useVoiceRecorder()
@@ -100,6 +105,15 @@ export default function AudioUploader() {
     }
   }, [transcription])
 
+  // Clean up audio URL when component unmounts or new file is selected
+  useEffect(() => {
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl)
+      }
+    }
+  }, [audioUrl])
+
   const handleStartRecording = async () => {
     try {
       await recorder.startRecording()
@@ -122,6 +136,9 @@ export default function AudioUploader() {
     setUploadProgress(0)
     setStatusMessage('Uploading...')
     setStatusType('idle')
+    setAudioUrl(null)
+    setActiveSegmentIndex(null)
+    setCurrentPlaybackTime(0)
 
     const formData = new FormData()
     formData.append('file', selectedFile)
@@ -149,6 +166,11 @@ export default function AudioUploader() {
           // Store transcription if present
           if (response.transcription) {
             setTranscription(response.transcription)
+            // Create audio URL from the selected file for playback
+            if (selectedFile) {
+              const url = URL.createObjectURL(selectedFile)
+              setAudioUrl(url)
+            }
           }
         } else {
           const errorResponse: UploadResponse = JSON.parse(xhr.responseText)
@@ -184,6 +206,9 @@ export default function AudioUploader() {
     setStatusMessage('')
     setStatusType('idle')
     setTranscription(null)
+    setAudioUrl(null)
+    setActiveSegmentIndex(null)
+    setCurrentPlaybackTime(0)
     recorder.discardRecording()
     // Reset file input
     const fileInput = document.getElementById('audio-file-input') as HTMLInputElement
@@ -205,6 +230,25 @@ export default function AudioUploader() {
   // Extract original filename without extension for export naming
   const getBaseFilename = (): string => {
     return selectedFile?.name.replace(/\.[^.]+$/, '') || 'transcription'
+  }
+
+  // Handle seeking to a specific timestamp
+  const handleSeekToTimestamp = (seconds: number) => {
+    setSeekToTime(seconds)
+    // Reset seekToTime after applying to allow re-seeking to same time
+    setTimeout(() => setSeekToTime(undefined), 100)
+  }
+
+  // Handle time updates from audio player
+  const handleTimeUpdate = (currentTime: number) => {
+    setCurrentPlaybackTime(currentTime)
+    // Find which segment is currently playing
+    if (transcription) {
+      const index = transcription.segments.findIndex(
+        seg => currentTime >= seg.start && currentTime < seg.end
+      )
+      setActiveSegmentIndex(index >= 0 ? index : null)
+    }
   }
 
   // Copy plain text to clipboard
@@ -517,6 +561,17 @@ export default function AudioUploader() {
         <div ref={resultsRef} className="mt-6 sm:mt-8 border-t border-gray-200 pt-6 sm:pt-8 scroll-mt-8">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Transcription</h3>
 
+          {/* Audio Player */}
+          {audioUrl && (
+            <div className="mb-6">
+              <TranscriptionPlayer
+                audioUrl={audioUrl}
+                onTimeUpdate={handleTimeUpdate}
+                seekToTime={seekToTime}
+              />
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2 mb-4">
             {/* Copy Text Only */}
@@ -579,7 +634,20 @@ export default function AudioUploader() {
           {/* Full Text */}
           <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
             <h4 className="text-sm font-medium text-gray-700 mb-1 sm:mb-2">Full Text</h4>
-            <p className="text-gray-900 leading-relaxed text-sm sm:text-base">{transcription.text}</p>
+            <p className="text-gray-900 leading-relaxed text-sm sm:text-base">
+              {transcription.segments.map((segment, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleSeekToTimestamp(segment.start)}
+                  className={`cursor-pointer hover:bg-indigo-100 transition-colors ${
+                    activeSegmentIndex === index ? 'bg-indigo-200 font-medium' : ''
+                  }`}
+                >
+                  {segment.text}
+                  {index < transcription.segments.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </p>
           </div>
 
           {/* Timestamped Segments */}
@@ -590,12 +658,17 @@ export default function AudioUploader() {
                 {transcription.segments.map((segment, index) => (
                   <div
                     key={index}
-                    className="flex gap-3 sm:gap-4 p-2 sm:p-3 bg-white border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                    onClick={() => handleSeekToTimestamp(segment.start)}
+                    className={`flex gap-3 sm:gap-4 p-2 sm:p-3 bg-white border rounded-lg cursor-pointer transition-all ${
+                      activeSegmentIndex === index
+                        ? 'bg-indigo-100 border-indigo-400'
+                        : 'border-gray-200 hover:bg-indigo-50 hover:border-indigo-300 hover:shadow-sm'
+                    }`}
                   >
-                    <div className="flex-shrink-0 text-[10px] sm:text-sm font-mono text-indigo-600 font-medium">
+                    <div className="flex-shrink-0 text-[10px] sm:text-sm font-mono text-indigo-700 font-semibold">
                       [{formatTimestamp(segment.start)}]
                     </div>
-                    <div className="flex-1 text-gray-800 text-xs sm:text-sm">
+                    <div className="flex-1 text-gray-900 text-xs sm:text-sm">
                       {segment.text}
                     </div>
                   </div>
