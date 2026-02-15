@@ -1,23 +1,23 @@
 # Whisper Test
 
-## Current State (v2.0)
+## What This Is
 
-The application provides a complete audio transcription workflow with multiple input methods and flexible output options:
+A local audio transcription web application using Next.js and whisper.cpp. Supports multiple input methods (file upload, drag-and-drop, browser recording with waveform visualization), flexible output (interactive playback, clipboard copy, TXT/SRT export), and automated deployment via GitHub Actions to Fly.io.
 
-- **Input:** File picker, drag-and-drop, and native browser recording (with real-time waveform visualization)
-- **Processing:** Audio format conversion and local transcription using `whisper.cpp`
-- **Output:** Transcription display with interactive playback, copy to clipboard (plain + timestamped), and export to TXT/SRT formats
-- **UX:** Real-time progress feedback, enhanced typography, and bidirectional audio/text synchronization
+## Core Value
 
-All v2.0 requirements satisfied. Deployed on Fly.io.
+Aplicação de transcrição de áudio com múltiplos métodos de entrada e saída flexível — totalmente local, sem envio de dados para serviços externos.
 
-## Current Milestone: v2.1 CI/CD & Docs
+## Current State (v2.1)
 
-**Goal:** Automate deployment via GitHub Actions and bring documentation up to date.
+- **Input:** File picker, drag-and-drop, native browser recording with real-time waveform visualization
+- **Processing:** Audio format conversion (FFmpeg) and local transcription (whisper.cpp) with real-time progress streaming
+- **Output:** Interactive playback with bidirectional sync, copy to clipboard (plain + timestamped), export to TXT/SRT
+- **CI/CD:** GitHub Actions pipeline — tag-triggered deployment to Fly.io with dual health verification
+- **Docs:** Comprehensive README (242 lines) with screenshots, setup guide, deployment docs, privacy section
+- **UX:** Real-time progress feedback, enhanced typography, responsive design
 
-**Target features:**
-- GitHub Actions pipeline with automatic deploy to Fly.io on tag creation
-- README updated to reflect current system capabilities
+Deployed on Fly.io. ~1,903 LOC TypeScript/CSS. 7 phases, 11 plans shipped across 3 milestones.
 
 ## Requirements
 
@@ -25,50 +25,52 @@ All v2.0 requirements satisfied. Deployed on Fly.io.
 
 - ✓ Audio upload, transcription, and display — v1.0
 - ✓ Drag-and-drop, browser recording, export, interactive playback — v2.0
+- ✓ CI/CD pipeline (GitHub Actions → Fly.io deploy on tag) — v2.1
+- ✓ Comprehensive README with screenshots — v2.1
 
 ### Active
 
-- [ ] CI/CD pipeline (GitHub Actions → Fly.io deploy on tag)
-- [ ] README reflecting current system state
+(No active requirements — all milestones complete)
 
 ### Out of Scope
 
-- Test automation in pipeline — not needed for this milestone
+- Test automation in pipeline — não há testes significativos ainda
+- Multi-environment deploy (staging/prod) — app simples, um ambiente é suficiente
 - WCAG accessibility — deferred to future milestone
-- Mobile UI/UX — deferred to future milestone
+- Mobile UI/UX enhancements — deferred to future milestone
 - Real-time transcription — deferred to future milestone
 
----
-
-<details>
-<summary>v1.0 Discovery & Initialization Details</summary>
-
-## What This Is
-Uma página web simples usando Next.js que permite fazer upload de arquivos de áudio e transcreve usando whisper.cpp localmente. É um teste de funcionamento — proof of concept para validar a integração entre frontend web e whisper.cpp.
-
-## Core Value
-Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando na tela.
-
 ## Context
-- whisper.cpp já está compilado na máquina do usuário
-- Projeto é um teste de funcionamento, não um produto
-- Next.js escolhido como framework (frontend + API routes)
-- Modelo base.en para velocidade no teste
 
-## Constraints
-- **Stack**: Next.js (frontend + backend via API routes)
-- **Transcrição**: whisper.cpp binário local, não API externa
-- **Modelo**: tiny ou base — priorizar velocidade sobre qualidade
-- **Escopo**: Mínimo viável — só precisa funcionar
+Shipped v2.1 with ~1,903 LOC TypeScript/CSS.
+Tech stack: Next.js 16, whisper.cpp, FFmpeg, Fly.io, GitHub Actions.
+3 milestones completed (v1.0 → v2.0 → v2.1) over 2 days.
+
+Open items for future work:
+- WCAG accessibility compliance
+- Mobile responsiveness enhancements
+- Audio player styling customization
+- Test automation in pipeline
 
 ## Key Decisions
+
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Next.js como framework full-stack | API routes simplificam backend | ✓ Complete |
-| whisper.cpp via CLI (spawn process) | Simples e direto | ✓ Complete |
-| Modelo tiny/base | Priorizar velocidade | ✓ Complete |
+| Next.js full-stack | API routes simplify backend | ✓ Good |
+| whisper.cpp via CLI | Simple and direct | ✓ Good |
+| Tiny/base model | Prioritize speed | ✓ Good |
+| SSE progress streaming | Real-time feedback without WebSocket complexity | ✓ Good |
+| Tag-based deployment | User prefers controlled releases over push-to-deploy | ✓ Good |
+| --remote-only Fly.io builds | Faster, no GitHub Actions minutes consumed | ✓ Good |
+| JPEG screenshots | User-captured files, practical choice | ✓ Good |
+| Privacy section in README | Critical for local AI positioning | ✓ Good |
 
-</details>
+## Constraints
+
+- **Stack**: Next.js (frontend + backend via API routes)
+- **Transcription**: whisper.cpp binary local, not external API
+- **Model**: tiny or base — prioritize speed over quality
+- **Deploy**: Fly.io via GitHub Actions on tag creation
 
 ---
-*Last updated: 2026-02-15 after v2.1 milestone start*
+*Last updated: 2026-02-15 after v2.1 milestone*

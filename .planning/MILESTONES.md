@@ -68,4 +68,45 @@ Historical record of shipped versions.
 
 ---
 
+---
+
+## v2.1: CI/CD & Docs
+
+**Shipped:** 2026-02-15
+**Phases:** 6-7 (2 phases, 2 plans)
+**Tag:** [v2.1](../../releases/tag/v2.1)
+
+### Deliverables
+
+- **CI/CD:** GitHub Actions pipeline with tag-triggered deployment to Fly.io, remote Docker builds, dual health verification
+- **Documentation:** Comprehensive README rewrite (242 lines) with screenshots, setup guide, deployment docs, privacy section
+
+### Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| CICD-01 | Auto deploy on tag creation | ✅ |
+| CICD-02 | Healthcheck after deploy | ✅ |
+| CICD-03 | Deploy status notification | ✅ |
+| DOCS-01 | Feature documentation | ✅ |
+| DOCS-02 | Setup instructions | ✅ |
+| DOCS-03 | Deploy documentation | ✅ |
+| DOCS-04 | UI screenshots | ✅ |
+
+**Coverage:** 7/7 (100%)
+
+### Scope
+
+- Files: 13 changed, 1,702 insertions
+- Timeline: 1 day (2026-02-14 → 2026-02-15)
+- Git range: 11a1f17..04f0031
+
+### Archive
+
+- **Roadmap:** [milestones/v2.1-ROADMAP.md](milestones/v2.1-ROADMAP.md)
+- **Requirements:** [milestones/v2.1-REQUIREMENTS.md](milestones/v2.1-REQUIREMENTS.md)
+
+---
+
 *Last updated: 2026-02-15*
+
