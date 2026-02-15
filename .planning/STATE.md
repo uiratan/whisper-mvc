@@ -1,6 +1,6 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-15 | **Current Status:** v2.0 SHIPPED | **Next:** v3.0 Planning
+**Last Updated:** 2026-02-15 | **Current Status:** v2.1 IN PROGRESS | **Phase:** Not started (defining requirements)
 
 ---
 
@@ -10,13 +10,16 @@ See: `.planning/PROJECT.md` (updated 2026-02-15)
 
 **Core Value:** Aplicação de transcrição de áudio com múltiplos métodos de entrada e saída flexível.
 
-**Current Focus:** Between milestones — ready for deployment or v3.0 planning.
+**Current Focus:** v2.1 CI/CD & Docs — automate deployment, update README.
 
 ---
 
 ## Current Position
 
-**Latest Milestone:** v2.0 Enhanced Input & Output — SHIPPED 2026-02-15
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-15 — Milestone v2.1 started
 
 **Milestones Completed:**
 
@@ -72,10 +75,9 @@ None.
 
 ## Session Continuity
 
-**Last Action:** Completed milestone v2.0 — archived roadmap, requirements, and created git tag.
+**Last Action:** Started milestone v2.1 CI/CD & Docs.
 
 **Ready For:**
-- Deploy to production (`git push origin master v2.0`)
-- Start v3.0 milestone (`/gsd:new-milestone`)
+- Define requirements and create roadmap
 
 ---

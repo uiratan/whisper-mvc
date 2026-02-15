@@ -9,14 +9,34 @@ The application provides a complete audio transcription workflow with multiple i
 - **Output:** Transcription display with interactive playback, copy to clipboard (plain + timestamped), and export to TXT/SRT formats
 - **UX:** Real-time progress feedback, enhanced typography, and bidirectional audio/text synchronization
 
-All v2.0 requirements satisfied. Production-ready for immediate deployment.
+All v2.0 requirements satisfied. Deployed on Fly.io.
 
-## Next Milestone Goals
+## Current Milestone: v2.1 CI/CD & Docs
 
-Potential areas for v3.0+:
-- **Accessibility:** WCAG compliance audit and improvements
-- **Mobile:** Enhanced UI/UX for mobile and tablet devices
-- **Advanced Features:** Real-time transcription, multi-file upload, audio filters
+**Goal:** Automate deployment via GitHub Actions and bring documentation up to date.
+
+**Target features:**
+- GitHub Actions pipeline with automatic deploy to Fly.io on tag creation
+- README updated to reflect current system capabilities
+
+## Requirements
+
+### Validated
+
+- ✓ Audio upload, transcription, and display — v1.0
+- ✓ Drag-and-drop, browser recording, export, interactive playback — v2.0
+
+### Active
+
+- [ ] CI/CD pipeline (GitHub Actions → Fly.io deploy on tag)
+- [ ] README reflecting current system state
+
+### Out of Scope
+
+- Test automation in pipeline — not needed for this milestone
+- WCAG accessibility — deferred to future milestone
+- Mobile UI/UX — deferred to future milestone
+- Real-time transcription — deferred to future milestone
 
 ---
 
@@ -51,4 +71,4 @@ Upload de um arquivo de áudio e ver a transcrição com timestamps funcionando 
 </details>
 
 ---
-*Last updated: 2026-02-15 after v2.0 milestone*
+*Last updated: 2026-02-15 after v2.1 milestone start*
