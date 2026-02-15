@@ -1,28 +1,31 @@
 # PROJECT STATE: Whisper Test
 
-**Last Updated:** 2026-02-15 | **Current Status:** v2.0 SHIPPED | **Overall Progress:** 100% (Ready for v3.0)
+**Last Updated:** 2026-02-15 | **Current Status:** v2.0 SHIPPED | **Next:** v3.0 Planning
 
 ---
 
 ## Project Reference
 
+See: `.planning/PROJECT.md` (updated 2026-02-15)
+
 **Core Value:** Aplicação de transcrição de áudio com múltiplos métodos de entrada e saída flexível.
 
-**What We've Built:** v2.0 complete with enhanced input methods (drag-and-drop, browser recording) and comprehensive output utilities (export TXT/SRT, copy to clipboard, interactive playback).
-
-**Current Focus:** Ready for deployment or next milestone planning (v3.0+).
+**Current Focus:** Between milestones — ready for deployment or v3.0 planning.
 
 ---
 
 ## Current Position
 
-**Roadmap Status:** v2.0 SHIPPED & ARCHIVED (2026-02-15)
+**Latest Milestone:** v2.0 Enhanced Input & Output — SHIPPED 2026-02-15
 
-**Milestone:** v2.0: Enhanced Input & Output
+**Milestones Completed:**
 
-**Phases Completed:** 3-5 (3 phases, 5 plans, all complete)
+| Milestone | Phases | Plans | Shipped |
+|-----------|--------|-------|---------|
+| v1.0 Proof of Concept | 1-2 | 4 | 2026-02-14 |
+| v2.0 Enhanced Input & Output | 3-5 | 5 | 2026-02-15 |
 
-**Progress:** [██████████] 100% | READY FOR DEPLOYMENT
+**Total:** 5 phases, 9 plans shipped
 
 ---
 
@@ -42,41 +45,7 @@
 | Recording | Browser recording, live visualization, and waveform preview. | `useVoiceRecorder.ts`, `LiveVisualizer.tsx`, `RecordingPreview.tsx` | 2026-02-14 |
 | Export/Copy | Client-side SRT/TXT export and clipboard integration with visual feedback. | `exportUtils.ts`, `AudioUploader.tsx` | 2026-02-15 |
 | Interactive Playback | HTML5 audio player with click-to-seek and real-time segment highlighting. | `TranscriptionPlayer.tsx`, `AudioUploader.tsx` | 2026-02-15 |
-| v2.0 Shipped | Enhanced Input & Output successfully delivered and archived (v2.0 tag created). | `.planning/milestones/v2.0-*` | 2026-02-15 |
-
-| Metric | Value | Target |
-|--------|-------|--------|
-| Requirements Mapped | 7/7 (v2) | 7/7 ✓ |
-| Phases Created | 3 (v2) | 3 |
-| Success Criteria Defined | 11 (v2) | - |
-| Plans Completed | 5 | - |
-| Requirements Fulfilled | 7/7 | 7/7 ✓ |
-| Phase 5.0 P05-02 | 10m | 2 tasks | 2 files |
-| Phase quick-3 P01 | 88 | 2 tasks | 2 files |
-
-## Accumulated Context
-
-### Key Decisions Made (Milestone 2.0)
-
-1. **Stack for v2:** `react-dropzone` for file input, native `MediaRecorder` + `AnalyserNode` for recording, `wavesurfer.js` for visualization.
-2. **Export Strategy:** Client-side generation of Blob URLs for SRT and TXT files.
-3. **SRT Timestamp Format:** HH:MM:SS,mmm with comma separator (SubRip standard).
-4. **Export Filenames:** Use original audio filename without extension for exports.
-5. **Copy Feedback:** 2-second checkmark icon display after successful clipboard copy.
-6. **Audio Playback URL:** Use URL.createObjectURL from selectedFile instead of backend file path (backend deletes files after transcription).
-7. **Player Choice:** Native HTML5 audio element for simplicity over wavesurfer.js (sufficient for click-to-seek functionality).
-
-### Todos
-
-- [x] Complete Phase 3 (Drag-and-Drop)
-- [x] Complete Phase 4 (Browser Recording)
-- [x] Complete Phase 5 Plan 1 (Export & Copy Utilities)
-- [x] Complete Phase 5 Plan 2 (Interactive Playback & UI Polish)
-- [x] Milestone 2.0 Complete - All Requirements Fulfilled
-
-### Blockers
-
-None.
+| v2.0 Shipped | Enhanced Input & Output delivered and archived (7/7 requirements, v2.0 tag). | `.planning/milestones/v2.0-*` | 2026-02-15 |
 
 ### Quick Tasks Completed
 
@@ -87,34 +56,30 @@ None.
 
 ---
 
+## Accumulated Context
+
+### Key Decisions
+
+Archived in `.planning/milestones/v2.0-ROADMAP.md` and `.planning/PROJECT.md`.
+
+### Blockers
+
+None.
+
+### Open Items for v3.0+
+
+- WCAG accessibility compliance (non-critical, identified in v2.0 audit)
+- Mobile responsiveness enhancements (non-critical)
+- Audio player styling customization (non-critical)
+
+---
+
 ## Session Continuity
 
 **Last Action:** Completed milestone v2.0 — archived roadmap, requirements, and created git tag.
 
-**Stopped At:** v2.0 Milestone Complete (2026-02-15 01:30 UTC)
-
-**What Changed This Session:**
-- ✅ Milestone v2.0 archived to `.planning/milestones/`
-- ✅ ROADMAP.md reorganized with milestone grouping
-- ✅ PROJECT.md updated with current state (v2.0 shipped)
-- ✅ REQUIREMENTS.md deleted (fresh for next milestone)
-- ✅ Git commit: chore: archive v2.0 milestone
-- ✅ Git tag: v2.0 created with release notes
-- ✅ MILESTONES.md historical record created
-- ✅ STATE.md updated for v2.0 shipped status
-
-**Requirements Satisfied:** 7/7 (100%)
-- EINP-01: Drag-and-drop ✅
-- EINP-02: Browser recording ✅
-- EINP-03: Real-time feedback ✅
-- EOUT-01: Copy to clipboard ✅
-- EOUT-02: Export TXT/SRT ✅
-- UIUX-01: Status feedback ✅
-- UIUX-02: Segment interaction ✅
-
 **Ready For:**
 - Deploy to production (`git push origin master v2.0`)
 - Start v3.0 milestone (`/gsd:new-milestone`)
-
 
 ---
