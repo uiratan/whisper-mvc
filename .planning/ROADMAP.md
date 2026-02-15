@@ -59,8 +59,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Export utilities (SRT/TXT generation) and action buttons (Copy, Download).
-- [ ] 05-02-PLAN.md — Audio player component with bidirectional sync and segment interaction.
+- [x] 05-01-PLAN.md — Export utilities (SRT/TXT generation) and action buttons (Copy, Download).
+- [x] 05-02-PLAN.md — Audio player component with bidirectional sync and segment interaction.
 
 **Requirements:**
 - EOUT-01: Copy to clipboard.
@@ -82,9 +82,9 @@ Plans:
 |-------|--------|--------------|----------|
 | 3 | Completed | 1 | 3 |
 | 4 | Completed | 2 | 4 |
-| 5 | Pending | 4 | 4 |
+| 5 | Completed | 4 | 4 |
 
 **Coverage:** 7/7 v2 requirements mapped ✓
 
 ---
-*Roadmap updated: 2026-02-14*
+*Roadmap updated: 2026-02-15*
