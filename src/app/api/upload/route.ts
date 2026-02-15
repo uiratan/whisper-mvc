@@ -109,6 +109,14 @@ async function transcribeAudio(wavPath: string): Promise<TranscriptionResult> {
         const jsonData = await readFile(jsonPath, 'utf-8')
         const result = JSON.parse(jsonData)
 
+        // DEBUG: Log first segment to understand timestamp format
+        if (result.transcription && result.transcription.length > 0) {
+          const firstSeg = result.transcription[0]
+          console.log('[DEBUG] First segment raw data:', JSON.stringify(firstSeg, null, 2))
+          console.log('[DEBUG] Offsets.from:', firstSeg.offsets?.from)
+          console.log('[DEBUG] Offsets.to:', firstSeg.offsets?.to)
+        }
+
         const segments: TranscriptionSegment[] = result.transcription?.map((seg: any) => ({
           start: seg.offsets.from / 100,
           end: seg.offsets.to / 100,
